@@ -1,6 +1,3 @@
-u=List[1,2,3]
-u.size
-
 
 (
 y = List[
