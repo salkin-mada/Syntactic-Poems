@@ -1,7 +1,24 @@
+(
+// s.options.outDevice_("hw:1");
+// s.options.inDevice_("hw:1");
+s.options.numOutputBusChannels_(4);
+s.options.numInputBusChannels_(2);
+s.options.numWireBufs(1024);
+s.options.memSize_(8192*10);
+s.options.sampleRate = 44100; /*96e3*/
+s.options.maxNodes = 2048;
+s.boot;
+s.doWhenBooted{
+    ("\n*** memSize; "++s.options.memSize).post;
+    s.recChannels_(2);
+	("\n~~~~~~~~~~~~~~~~~~~~~~~" ++ "\n*** Overwriting recChannels to: " ++ s.recChannels ++ "\n").post;
+}
+)
+
 
 (
 y = List[
-	{},
+	{Silence.ar},
 	{x=LPF18.ar(DPW4Saw.ar(LFNoise0.ar(3.1*Ndef(\x).ar)),10%Ndef(\x).ar,1.29);Limiter.ar(SinOsc.ar([x%2e2,x%3e2]/x),0.2).flatten},
 	{x=LPF18.ar(DPW4Saw.ar(Saw.ar(5e3*Ndef(\x).ar.abs)),5e-2*Ndef(\x).ar,0.1);Limiter.ar(SinOsc.ar([x%40,x%70*Ndef(\x).ar]/x),0.3).flatten},
 	{x=LPF18.ar(DPW4Saw.ar(Saw.ar(0.07*Ndef(\x).ar)),0.001*Ndef(\x).ar,0.9);Limiter.ar(SinOsc.ar([x+1e2,x+1e2]/x),0.2).flatten},
@@ -19,7 +36,7 @@ y = List[
 	{x=LPF18.ar(DPW4Saw.ar(Saw.ar(0.2*Ndef(\x).ar)),0.2*Ndef(\x).ar,0.9);Limiter.ar(SinOsc.ar([x%2e2,x%3e2]/x),0.2).flatten},
 	{x=LPF18.ar(DPW4Saw.ar(Saw.ar(0.7*Ndef(\x).ar)),0.8*Ndef(\x).ar,0.9);Limiter.ar(SinOsc.ar([x%5e2,x%4e2]/x),0.2).flatten},
 	{x=LPF18.ar(DPW4Saw.ar(Saw.ar(0.0000001*Ndef(\x).ar)),0.0000001*Ndef(\x).ar,0.9);Limiter.ar(SinOsc.ar([x+1e2,x+1e2]/x),0.2).flatten},
-	{x=LPF18.ar(DPW4Saw.ar(Saw.ar(0.0007*Ndef(\x).ar)),0.001*Ndef(\x).ar,0.9);Limiter.ar(SinOsc.ar([x+1e2,x+1e2]/x),0.2).flatten},
+	{x=LPF18.ar(DPW4Saw.ar(Saw.ar(0.0007*Ndef(\x).ar)),0.1*Ndef(\x).ar,0.9);Limiter.ar(SinOsc.ar([x+1e2,x+1e2]/x),0.2).flatten},
 	{x=LPF18.ar(DPW4Saw.ar(Saw.ar(0.0007*Ndef(\x).ar)),0.0001*Ndef(5).ar,0.9);Limiter.ar(SinOsc.ar([x+88,x+99]/x),0.2).flatten},
 	{x=LPF18.ar(DPW4Saw.ar(Saw.ar(0.07*Ndef(\x).ar)),0.0001*Ndef(\x).ar,0.3);Limiter.ar(SinOsc.ar([x+88,x+99]/x),0.2).flatten},
 	{x=LPF18.ar(DPW4Saw.ar(Saw.ar(0.07*Ndef(\x).ar)),0.0001*Ndef(\x).ar,0.3);Limiter.ar(SinOsc.ar([x+Ndef(\x).ar.range(99,1),x+Ndef(\x).ar.range(1,88)]/x),0.2).flatten},
@@ -49,9 +66,7 @@ y = List[
 	{x=LPFVS6.ar(SinGrain.ar(Impulse.ar(10),0.1,DPW4Saw.ar(SinGrain.ar(Impulse.ar(30), 0.1, Ndef(\x).ar.abs*50))),Ndef(\x).ar.range(2000,30),Ndef(\x).ar.abs);Limiter.ar(DPW4Saw.ar([x%Ndef(\x).ar.range(700,x.abs),x%Ndef(\x).ar.range(701,x.abs)]),0.3).flatten},
 	{x=LPFVS6.ar(SinGrain.ar(Impulse.ar(10),0.1,DPW4Saw.ar(SinGrain.ar(Impulse.ar(30), 0.1, Ndef(\x).ar.abs*50))),Ndef(\x).ar.range(2000,30),Ndef(\x).ar.abs);Limiter.ar(DPW4Saw.ar([x%Ndef(\x).ar.range(400,x.abs),x%Ndef(\x).ar.range(701,x.abs)]),0.3).flatten},
 	{x=LPFVS6.ar(SinGrain.ar(Impulse.ar(10),0.1,DPW4Saw.ar(SinGrain.ar(Impulse.ar(30), 0.1, Ndef(\x).ar.abs*50))),Ndef(\x).ar.range(2000,30),Ndef(\x).ar.abs);Limiter.ar(DPW4Saw.ar([x%Ndef(\x).ar.range(200,x.abs),x%Ndef(\x).ar.range(701,x.abs)]),0.3).flatten},
-	{SinOsc.ar([220,230], 0, 0.4)},
-	{Saw.ar([220,230], 0, 0.3)},
-	{Pulse.ar([220,230], 0, 0.2)}
+	{SinOsc.ar([420,430],0,0.8)},
 ];
 )
 
@@ -61,7 +76,7 @@ y.size;
 fork{
 	Ndef(\x,
 		\setsrc -> Pbind(
-			\poem, 45,//Pseq([Pxrand((1..y.size-1), 2), 0], inf),
+			\poem, 18,//Pseq([Pxrand((1..y.size-1), 2), 0], inf),
 			\source,
 			Pfunc({|envir|
 				if(envir.poem > 0){
@@ -69,7 +84,7 @@ fork{
 					y.at(envir.poem).postcs
 				}{
 					"\t\tsil".postln;
-					y.at(0)
+					y.at(0).postcs
 				}
 			}),
 			\dur,
@@ -77,9 +92,9 @@ fork{
 		).flatten
 		.trace(\poem, prefix: "poem: ")
 		.trace(\dur, prefix: "dur: ");
-	).playN([22,23]);
+	).playN([2,3]);
 
-	/*Ndef(\u,
+	Ndef(\u,
 		\setsrc -> Pbind(
 			\poem, Pseq([Pxrand((1..y.size-1), 2), 0], inf),
 			\source,
@@ -97,7 +112,7 @@ fork{
 		).flatten
 		.trace(\poem, prefix: "poem: ")
 		.trace(\dur, prefix: "dur: ");
-	).playN([22,23]);
+	).playN([2,3]);
 
 	Ndef(\o,
 		\setsrc -> Pbind(
@@ -117,15 +132,15 @@ fork{
 		).flatten
 		.trace(\poem, prefix: "poem: ")
 		.trace(\dur, prefix: "dur: ");
-	).playN([22,23]);*/
+	).playN([2,3]);
 
 	1.0.wait; // correct order ensured.. hmm.
 
 	Ndef(\protect, {var in, lim;
-		in = In.ar(22,2);
+		in = In.ar(2,2);
 		in = BHiShelf.ar(in, 1200, db: -10);
 		lim = Limiter.ar(in);
-		LeakDC.ar(lim)*0.6;
+		LeakDC.ar(lim*0.7);
 }).play
 })
 
@@ -137,50 +152,6 @@ fork{
 
 
 
-
-/*kån
-{Pulse.ar([220,230], 0, 0.2)}
-poem: 50
-dur: 10
-kån
-{Saw.ar([220,230], 0, 0.3)}
-poem: 49
-dur: 3
-Ndef('u'): adopted proxy input to audio rate
-kån
-{x=LPF18.ar(DPW4Saw.ar(Saw.ar(10.19*Ndef(\x).ar.range(-4,4))),Ndef(\x).ar.range(20,1),0.6);Limiter.ar(SinOsc.ar([x%Ndef(\x).ar.range(187,-8),x%Ndef(\x).ar.range(-80,398)]/x),0.3).flatten}
-poem: 37
-dur: 1
-Ndef('o'): wrapped channels from 4 to 2 channels
-kån
-{x=LPF18.ar(DPW4Saw.ar(Saw.ar(0.7*Ndef(\x).ar)),Ndef(\x).ar.range(1,20),0.9);Limiter.ar(SinOsc.ar([x+Ndef(\x).ar.range(99,1),x+Ndef(\x).ar.range(1,88)]/x),0.2).flatten}
-poem: 23
-dur: 5
-Ndef('o'): wrapped channels from 4 to 2 channels
-kån
-{x=LPF18.ar(DPW4Saw.ar(Saw.ar(2*Ndef(\x).ar.abs)),1*Ndef(\x).ar,0.2);Limiter.ar(SinOsc.ar([x%1e2,x%2e2]/x),0.3).flatten}
-poem: 10
-dur: 1
-Ndef('u'): wrapped channels from 4 to 2 channels
-kån
-{x=LPF18.ar(DPW4Saw.ar(Saw.ar(4e3*Ndef(\x).ar.abs)),5e-2*Ndef(\x).ar,0.1);Limiter.ar(SinOsc.ar([x%40,x%50*Ndef(\x).ar]/x),0.3).flatten}
-poem: 31
-dur: 9
-Ndef('u'): wrapped channels from 4 to 2 channels
-kån
-{Pulse.ar([220,230], 0, 0.2)}
-poem: 50
-dur: 1
-kån
-{x=LPF18.ar(DPW4Saw.ar(Saw.ar(1e4*Ndef(\x).ar.abs)),5e-5*Ndef(\x).ar,0.1);Limiter.ar(SinOsc.ar([x%20,x%30]/x),0.3).flatten}
-poem: 11
-dur: 1
-Ndef('o'): wrapped channels from 4 to 2 channels
-kån
-{x=LPFVS6.ar(LFSaw.ar(DPW4Saw.ar(Ndef(\x).ar*Saw.ar(Ndef(\x).ar))),Ndef(\x).ar.range(0.001,10),Ndef(\x).ar.abs*0.1);Limiter.ar(Resonz.ar(LFSaw.ar([x-Ndef(\x).ar.range(4000,x.abs),x-Ndef(\x).ar.range(4001,x.abs)]),x.range(x*200,Ndef(\x).ar.abs)+Ndef(\x).ar,1),0.3).flatten}
-poem: 44
-dur: 9
-Ndef('o'): wrapped channels from 4 to 2 channels*/
 
 
 
