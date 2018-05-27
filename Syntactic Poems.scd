@@ -1,4 +1,4 @@
-(
+( // use this for raspi
 // s.options.outDevice_("hw:1");
 // s.options.inDevice_("hw:1");
 s.options.numOutputBusChannels_(4);
@@ -70,13 +70,41 @@ y = List[
 ];
 )
 
-y.size;
+(y.size-1).rand;
+
+
+/*
+approoveed,
+44
+33
+*/
 
 (
 fork{
 	Ndef(\x,
 		\setsrc -> Pbind(
-			\poem, 18,//Pseq([Pxrand((1..y.size-1), 2), 0], inf),
+			//\poem, 44,//Pseq([Pxrand((1..y.size-1), 2), 0], inf),
+			\poem, 44,
+			/*Pfunc({|envir|
+				var chosen, flag = false, count = 0;
+				//flag.postln;
+				if(flag==false){
+					flag=true;
+					chosen = (1..y.size-1).choose;
+				};
+
+				//chosen.postln;
+
+				/*
+				if(count>=7){
+					chosen;
+					count+1;
+				}{
+					count = 0;
+					flag=false;
+				};*/
+				//chosen;
+			}),*/
 			\source,
 			Pfunc({|envir|
 				if(envir.poem > 0){
@@ -88,13 +116,22 @@ fork{
 				}
 			}),
 			\dur,
-			Prand( (10..30.0), inf)
+			Pfunc({|envir|
+				if(envir.poem > 0){
+					(1..5.0).choose;
+				}{
+					2;
+				}
+			}),
+
+
+
 		).flatten
 		.trace(\poem, prefix: "poem: ")
 		.trace(\dur, prefix: "dur: ");
 	).playN([2,3]);
 
-	Ndef(\u,
+	/*Ndef(\u,
 		\setsrc -> Pbind(
 			\poem, Pseq([Pxrand((1..y.size-1), 2), 0], inf),
 			\source,
@@ -132,7 +169,7 @@ fork{
 		).flatten
 		.trace(\poem, prefix: "poem: ")
 		.trace(\dur, prefix: "dur: ");
-	).playN([2,3]);
+	).playN([2,3]);*/
 
 	1.0.wait; // correct order ensured.. hmm.
 
