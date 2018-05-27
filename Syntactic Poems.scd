@@ -123,9 +123,6 @@ fork{
 					2;
 				}
 			}),
-
-
-
 		).flatten
 		.trace(\poem, prefix: "xpoem: ")
 		.trace(\dur, prefix: "xdur: ");
@@ -167,15 +164,11 @@ fork{
 			\dur,
 			Prand( (10..30.0), inf)
 		).flatten
-<<<<<<< HEAD
-		.trace(\poem, prefix: "poem: ")
-		.trace(\dur, prefix: "dur: ");
-	).playN([2,3]);*/
-=======
+
 		.trace(\poem, prefix: "opoem: ")
 		.trace(\dur, prefix: "odur: ");
-	).playN([2,3]);
->>>>>>> 1dc9881482a9639a1e41d4127407fb318da45303
+	).playN([2,3]);*/
+
 
 	1.0.wait; // correct order ensured.. hmm.
 
