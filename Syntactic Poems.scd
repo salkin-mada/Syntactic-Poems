@@ -9,11 +9,363 @@ s.options.sampleRate = 44100; /*96e3*/
 s.options.maxNodes = 2048;
 s.boot;
 s.doWhenBooted{
-    ("\n*** memSize; "++s.options.memSize).post;
-    s.recChannels_(2);
+	("\n*** memSize; "++s.options.memSize).post;
+	s.recChannels_(2);
 	("\n~~~~~~~~~~~~~~~~~~~~~~~" ++ "\n*** Overwriting recChannels to: " ++ s.recChannels ++ "\n").post;
 }
 )
+
+
+
+
+
+
+
+(
+
+l= 1024;    //global window/buffer size in pixels/samples
+s.latency= 0.05;
+
+s.waitForBoot{
+	//--variables
+	var theta= 0;
+	var fps= 60;
+	var arr= Array.fill(l, 0);
+	var cnt= 0;
+
+	//--window setup
+	var width= l, height= l;
+	var w= Window("gendar_theta", Rect(99, 20, width, height), true);
+	var u= UserView(w, Rect(0, 0, width*2, height));
+	var w2= width*0.5;
+	var h2= height*0.5;
+	var cellWidth= 10, cellHeight= 10;
+
+	//--buffer
+	b= Buffer.alloc(s, l, 2);
+	s.sync;
+
+	//--interface
+	~amp = 0.3;
+	~speed = 0.0000001;
+	~trails = 0.2;
+	~flip= 1;
+	~version = 8;
+	~red = 1.0;
+	~green = 0.0;
+	~blue = 0.0;
+	~alpha = 0.9;
+
+	//--main loop
+	u.drawFunc= {
+		//uncomment framerate display in the two lines below to gain some speed
+		Pen.color= Color.white;
+		Pen.stringAtPoint("func{sig.fold()2*9e3}"+u.frameRate, Point(200, 20));
+		//--
+		b.getn(0, b.numFrames-1, {|data| arr= data});
+		if(cnt==0, {
+			Pen.fillColor= Color.black;	//erase first time
+			Pen.fillRect(Rect(0, 0, width, height));
+		});
+
+		Pen.fillColor= Color.red(0, ~trails);
+		Pen.fillRect(u.bounds);			//manually clear
+		Pen.strokeColor= Color.new(~red, ~green, ~blue, ~alpha);
+
+		switch(~version,
+			0, {									//line
+				Pen.rotate(theta, w2, h2);
+				Pen.translate(0, h2);
+				arr.do{|y, x|
+					var p= Point(x, y*(height*~amp));
+					if(x==0, {Pen.moveTo(p)}, {Pen.lineTo(p)});
+				};
+				Pen.stroke;
+			},
+			1, {									//warp
+				Pen.rotate(theta, w2, h2);
+				Pen.translate(w2, h2);
+				arr.do{|y, x|
+
+					var p= Point(x*~amp, y*~amp).rotate(y*2pi);
+					if(x==0, {Pen.moveTo(p)}, {Pen.lineTo(p)});
+				};
+				Pen.stroke;
+			},
+			2, {									//flower
+				Pen.translate(w2, h2);
+				Pen.moveTo(Point(arr[0], 0)*arr[0]);
+				arr.do{|y, x|
+
+					var p= Point(y, x)*y;
+					var a= x%width/width*2pi+theta;
+					Pen.lineTo(p.rotate(a));
+				};
+				Pen.stroke;
+			},
+			3, {									//experimental
+				Pen.rotate(theta, w2, h2);
+				Pen.translate(w2, h2);
+				arr.do{|y, x|
+					var p= Point(x*~amp, y*~amp).rotate(y*2pi);
+					var a= x%width/width*1pi;
+					var i= ~speed*~amp;
+					var u= 0.1;
+					if(x==0,
+						{
+							Pen.rotate(i, u, 0);
+
+							Pen.moveTo(p)
+						},
+						{
+							Pen.translate(i,0);
+							//Pen.rotate(0, 0, 130*~speed);
+							Pen.lineTo(p.rotate(a))
+						}
+					);
+				};
+				Pen.stroke;
+			},
+			4, {									//new search
+				Pen.rotate(theta, w2, h2);
+				Pen.translate(w2, h2);
+				arr.do{|y, x|
+					var p= Point(x*~amp, y*~amp).rotate(y*12pi);
+					var a= x%width/width*1pi;
+					var i= ~speed*~amp/2;
+					var u= 0.1;
+					if(x==0,
+						{
+							//Pen.rotate(i, u, 0);
+
+							Pen.moveTo(p)
+						},
+						{
+							Pen.translate(i.range(0,0.001),0);
+							//Pen.rotate(0, 0, 130*~speed);
+							Pen.lineTo(p.rotate(a))
+						}
+					);
+				};
+				Pen.stroke;
+			},
+			5, {
+				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
+				var windowLength = 3;//(~speed*8).asInt;
+				var times= 6;
+				Pen.fillColor= Color.red;
+				//rule= 256.rand.postln;
+				rule= (~trails/~amp*256).asInt;
+				krt = krt+~flip/~amp*0.6;
+				pat= 0.dup((width/cellWidth).round);
+				pat.put((pat.size/2).round, 1);
+				dict= ();
+				times.do{|i| dict.put(i.asBinaryDigits(windowLength).join.asSymbol, rule.asBinaryDigits[(times-1)-i])};
+
+				//--render
+				while({yrt*cellHeight<height}, {
+					pat.do{|c, x|
+						if(c==1, {
+							Pen.addRect(Rect(x*cellWidth, yrt*cellHeight, cellWidth/~amp, cellHeight/~flip));
+						});
+					};
+					pat= [0]++pat.slide(windowLength, 1).clump(windowLength).collect{|c|
+						dict.at(c.join.asSymbol);
+					}++[0];
+					yrt= yrt+krt;
+				});
+				Pen.fill;
+				//Pen.stroke;
+			},
+			6, {
+				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
+				var windowLength = 3;//(~speed*8).asInt;
+				var times= 6;
+				Pen.fillColor= Color.white;
+				//rule= 256.rand.postln;
+				rule= (~trails/~amp*256).asInt;
+				krt = krt+~flip/~amp*0.6;
+				pat= 0.dup((width/cellWidth).round);
+				pat.put((pat.size/2).round, 1);
+				dict= ();
+				times.do{|i| dict.put(i.asBinaryDigits(windowLength).join.asSymbol, rule.asBinaryDigits[(times-1)-i])};
+
+				//--render
+				while({yrt*cellHeight<height}, {
+					pat.do{|c, x|
+						if(c==1, {
+							Pen.addRect(
+								Rect(
+									(~amp*x*cellWidth)+x*cellWidth*~amp*~flip*5,
+									(~amp*x*cellWidth)+yrt*cellHeight*~amp,
+									cellWidth/~amp,
+									cellHeight/~flip));
+						});
+					};
+					pat= [0]++pat.slide(windowLength, 1).clump(windowLength).collect{|c|
+						dict.at(c.join.asSymbol);
+					}++[0];
+					yrt= yrt+krt;
+				});
+				Pen.fill;
+				//Pen.stroke;
+			},
+			7, {
+				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
+				var windowLength = 3;//(~speed*8).asInt;
+				var times= 6;
+				Pen.fillColor= Color.white;
+				//rule= 256.rand.postln;
+				rule= (~trails/~amp*256).asInt;
+				krt = krt+~flip/~amp*0.6;
+				pat= 0.dup((width/cellWidth).round);
+				pat.put((pat.size/2).round, 1);
+				dict= ();
+				times.do{|i| dict.put(i.asBinaryDigits(windowLength).join.asSymbol, rule.asBinaryDigits[(times-1)-i])};
+
+				//--render
+				while({yrt*cellHeight<height}, {
+					pat.do{|c, x|
+						if(c==1, {
+							Pen.addRect(
+								Rect(
+									(~amp*x*cellWidth)+x*cellWidth*~amp*~flip*5,
+									(~amp*x*cellWidth)+yrt*cellHeight*~amp,
+									cellWidth/~amp,
+									cellHeight/~flip));
+						});
+					};
+					pat= [0]++pat.slide(windowLength, 1).clump(windowLength).collect{|c|
+						dict.at(c.join.asSymbol);
+					}++[0];
+					yrt= yrt+krt;
+				});
+				Pen.fill;
+				//Pen.stroke;
+			},
+			8, {
+
+				/*
+				   first "even" spread version attempt.
+				*/
+
+				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
+				var windowLength = 3;//(~speed*8).asInt;
+				var times= 6;
+				Pen.fillColor= Color.white;
+				//rule= 256.rand.postln;
+				rule= (~trails/~amp*256).asInt;
+				krt = krt+~flip/~amp*0.6;
+				pat= 0.dup((width/cellWidth).round);
+				pat.put((pat.size/2).round, 1);
+				dict= ();
+				times.do{|i| dict.put(i.asBinaryDigits(windowLength).join.asSymbol, rule.asBinaryDigits[(times-1)-i])};
+
+				//--render
+				while({yrt*cellHeight<height}, {
+					pat.do{|c, x|
+						if(c==1, {
+							Pen.addRect(
+								Rect(
+									(~amp*x*cellWidth)+x*(cellWidth*1.1)*~amp*~flip/~trails.range(1,8),
+									(~amp*x*cellWidth)+yrt*(cellHeight*5)*~amp,
+									cellWidth/~amp,
+									cellHeight/~flip));
+						});
+					};
+					pat= [0]++pat.slide(windowLength, 1).clump(windowLength).collect{|c|
+						dict.at(c.join.asSymbol);
+					}++[0];
+					yrt= yrt+krt;
+				});
+				Pen.fill;
+				//Pen.stroke;
+			}
+
+		);
+		theta= theta/**~speed*/;
+		cnt= cnt+1;
+	};
+
+	//--window management
+	u.clearOnRefresh= false;
+	w.onClose= {
+		b.free;
+	};
+
+	w.front;
+	CmdPeriod.doOnce({if(w.isClosed.not, {w.close})});
+	u.animate= true;
+};
+
+OSCdef(\amp, {arg msg, time;
+	var val = msg[1];
+	~amp = val;
+}.inEnvir, '/painter/amp');
+
+OSCdef(\speed, {arg msg, time;
+	var val = msg[1];
+	~speed = val;
+}.inEnvir, '/painter/speed');
+
+OSCdef(\trails, {arg msg, time;
+	var val = msg[1];
+	~trails = val.linlin(0.00001, 1.0, 0.00001, 0.2);
+}.inEnvir, '/painter/trails');
+
+OSCdef(\flip, {arg msg, time;
+	var val = msg[1];
+	~flip = val.clip(0.01,1e3);
+}.inEnvir, '/painter/flip');
+
+OSCdef(\version, {arg msg, time;
+	var val = msg[1];
+	~version = val;
+}.inEnvir, '/painter/version');
+
+OSCdef(\red, {arg msg, time;
+	var val = msg[1];
+	~red = val;
+}.inEnvir, '/rgba/red');
+
+OSCdef(\green, {arg msg, time;
+	var val = msg[1];
+	~green = val;
+}.inEnvir, '/rgba/green');
+
+OSCdef(\blue, {arg msg, time;
+	var val = msg[1];
+	~blue = val;
+}.inEnvir, '/rgba/blue');
+
+OSCdef(\alpha, {arg msg, time;
+	var val = msg[1];
+	~alpha = val;
+}.inEnvir, '/rgba/alpha');
+
+
+)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 (
@@ -67,43 +419,75 @@ y = List[
 	{x=LPFVS6.ar(SinGrain.ar(Impulse.ar(10),0.1,DPW4Saw.ar(SinGrain.ar(Impulse.ar(30), 0.1, Ndef(\x).ar.abs*50))),Ndef(\x).ar.range(2000,30),Ndef(\x).ar.abs);Limiter.ar(DPW4Saw.ar([x%Ndef(\x).ar.range(400,x.abs),x%Ndef(\x).ar.range(701,x.abs)]),0.3).flatten},
 	{x=LPFVS6.ar(SinGrain.ar(Impulse.ar(10),0.1,DPW4Saw.ar(SinGrain.ar(Impulse.ar(30), 0.1, Ndef(\x).ar.abs*50))),Ndef(\x).ar.range(2000,30),Ndef(\x).ar.abs);Limiter.ar(DPW4Saw.ar([x%Ndef(\x).ar.range(200,x.abs),x%Ndef(\x).ar.range(701,x.abs)]),0.3).flatten},
 	{SinOsc.ar([420,430],0,0.8)},
+	{g=LocalBuf(8192,4);d=Dust.kr(0.2)+Dust2.kr([2,1]);r=PlayBuf.ar(2,g,TExpRand.kr(0.01,19,d),d,0,1)/4;FFT(g,d+(d*r));r.clip2(1).flatten},
+	{t=(1..5);f=t*9999*Pulse.ar(1);d=SinOsc.ar(1).range(0,3);e=t/10;k=SinGrain.ar(Dust.ar(e),d,f).sum;Squiz.ar(k!2,4,1,10)},
+	{t=(1..5);f=t*299*Pulse.ar(1);d=SinOsc.ar(1).range(0,3);e=t/10;k=SinGrain.ar(Dust.ar(e),d,f).sum;Squiz.ar(k!2,4,1,10)}
 ];
 )
-
+y.size-1
 (y.size-1).rand;
-
 
 /*
 approoveed,
 44
 33
+24 -- undersøg de bløde ting der kommer frem
+23 -- den gør det...
 */
 
 (
+OSCdef(\ctrlAmp, {arg msg, time, addr, port;
+	var val = msg[3];
+	//msg.postln;
+	NetAddr("127.0.0.1", 57120).sendMsg('/painter/amp', val);
+}, '/tr', argTemplate: [nil, 0]);
+
+OSCdef(\ctrlSpeed, {arg msg, time, addr, port;
+	var val = msg[3];
+	//msg.postln;
+	NetAddr("127.0.0.1", 57120).sendMsg('/painter/speed', val);
+}, '/tr', argTemplate: [nil, 1]);
+
+OSCdef(\ctrlFlip, {arg msg, time, addr, port;
+	var val = msg[3];
+	//msg.postln;
+	NetAddr("127.0.0.1", 57120).sendMsg('/painter/flip', val);
+}, '/tr', argTemplate: [nil, 2]);
+
+OSCdef(\ctrlTrails, {arg msg, time, addr, port;
+	var val = msg[3];
+	//msg.postln;
+	NetAddr("127.0.0.1", 57120).sendMsg('/painter/trails', val);
+}, '/tr', argTemplate: [nil, 3]);
+
+
+
 fork{
 	Ndef(\x,
 		\setsrc -> Pbind(
-			//\poem, 44,//Pseq([Pxrand((1..y.size-1), 2), 0], inf),
-			\poem, 44,
+			//\poem, Pseq([Pxrand((1..y.size-1), 2), 0], inf),
+			//\poem, Pseq([Pxrand((1..y.size-1), 2), 49], inf),
+			//\poem, Pseq([50,49], inf), // nice syntetisk chill
+			\poem, Pseq([34,41,50,49], inf),
 			/*Pfunc({|envir|
-				var chosen, flag = false, count = 0;
-				//flag.postln;
-				if(flag==false){
-					flag=true;
-					chosen = (1..y.size-1).choose;
-				};
+			var chosen, flag = false, count = 0;
+			//flag.postln;
+			if(flag==false){
+			flag=true;
+			chosen = (1..y.size-1).choose;
+			};
 
-				//chosen.postln;
+			//chosen.postln;
 
-				/*
-				if(count>=7){
-					chosen;
-					count+1;
-				}{
-					count = 0;
-					flag=false;
-				};*/
-				//chosen;
+			/*
+			if(count>=7){
+			chosen;
+			count+1;
+			}{
+			count = 0;
+			flag=false;
+			};*/
+			//chosen;
 			}),*/
 			\source,
 			Pfunc({|envir|
@@ -118,9 +502,9 @@ fork{
 			\dur,
 			Pfunc({|envir|
 				if(envir.poem > 0){
-					(1..5.0).choose;
+					(1..20.0).choose;
 				}{
-					2;
+					10;
 				}
 			}),
 		).flatten
@@ -129,55 +513,70 @@ fork{
 	).playN([2,3]);
 
 	/*Ndef(\u,
-		\setsrc -> Pbind(
-			\poem, Pseq([Pxrand((1..y.size-1), 2), 0], inf),
-			\source,
-			Pfunc({|envir|
-				if(envir.poem > 0){
-					//"\t\tkån".postln;
-					y.at(envir.poem).postcs
-				}{
-					//"\t\tsil".postln;
-					y.at(0).postcs
-				}
-			}),
-			\dur,
-			Prand( (10..30.0), inf)
-		).flatten
-		.trace(\poem, prefix: "upoem: ")
-		.trace(\dur, prefix: "udur: ");
+	\setsrc -> Pbind(
+	\poem, Pseq([Pxrand((1..y.size-1), 2), 0], inf),
+	\source,
+	Pfunc({|envir|
+	if(envir.poem > 0){
+	//"\t\tkån".postln;
+	y.at(envir.poem).postcs
+	}{
+	//"\t\tsil".postln;
+	y.at(0).postcs
+	}
+	}),
+	\dur,
+	Prand( (10..30.0), inf)
+	).flatten
+	.trace(\poem, prefix: "upoem: ")
+	.trace(\dur, prefix: "udur: ");
 	).playN([2,3]);
 
 	Ndef(\o,
-		\setsrc -> Pbind(
-			\poem, Pseq([Pxrand((1..y.size-1), 2), 0], inf),
-			\source,
-			Pfunc({|envir|
-				if(envir.poem > 0){
-					//"\t\tkån".postln;
-					y.at(envir.poem).postcs
-				}{
-					//"\t\tsil".postln;
-					y.at(0).postcs
-				}
-			}),
-			\dur,
-			Prand( (10..30.0), inf)
-		).flatten
+	\setsrc -> Pbind(
+	\poem, Pseq([Pxrand((1..y.size-1), 2), 0], inf),
+	\source,
+	Pfunc({|envir|
+	if(envir.poem > 0){
+	//"\t\tkån".postln;
+	y.at(envir.poem).postcs
+	}{
+	//"\t\tsil".postln;
+	y.at(0).postcs
+	}
+	}),
+	\dur,
+	Prand( (10..30.0), inf)
+	).flatten
 
-		.trace(\poem, prefix: "opoem: ")
-		.trace(\dur, prefix: "odur: ");
+	.trace(\poem, prefix: "opoem: ")
+	.trace(\dur, prefix: "odur: ");
 	).playN([2,3]);*/
 
 
 	1.0.wait; // correct order ensured.. hmm.
 
-	Ndef(\protect, {var in, lim;
+	Ndef(\protect, {var in, freq, hasFreq, lim, followAmp, followCrest, followZero, follow, sum;
 		in = In.ar(2,2);
 		in = BHiShelf.ar(in, 1200, db: -10);
 		lim = Limiter.ar(in);
-		LeakDC.ar(lim*0.7);
-}).play
+		sum = LeakDC.ar(lim*0.7);
+		RecordBuf.ar(HPF.ar((sum*3), 40), b);
+		followAmp = Amplitude.kr(sum);
+		followCrest = Crest.kr(sum);
+		followZero = ZeroCrossing.ar(sum);
+		# freq, hasFreq = Tartini.kr(sum, 0.93,1024,512,512);
+
+		SendTrig.kr(Impulse.kr(100), 0, followAmp; );
+		SendTrig.kr(Impulse.kr(100), 1, followCrest; );
+		SendTrig.kr(Impulse.kr(100), 2, followZero*0.0005; );
+		SendTrig.kr(Impulse.kr(100), 3, freq.at(0).linlin(20,1000,0.01,1.0); );
+		sum;
+
+	}).play;
+
+
+
 })
 
 
@@ -186,7 +585,25 @@ fork{
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Ndef(\,{b=LocalBuf(8192,4);d=Dust.kr(0.2)+Dust2.kr([2,1]);r=PlayBuf.ar(2,b,TExpRand.kr(0.01,19,d),d,0,1)/4;FFT(b,d+(d*r));r.clip2(1)}).playN([0,1]);
+
+
 
 Ndef(\,{b=LocalBuf(512*24,4);d=Impulse.kr(SinOsc.kr(0.1).unipolar.range(0.1,8));r=PlayBuf.ar(2,b,TChoose.kr(d, [0,3]),d,0,1);FFT(b,d-(d%r));r.clip2(0.1)}).playN([0,1]); // raster
 
