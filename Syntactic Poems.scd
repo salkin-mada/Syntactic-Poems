@@ -51,6 +51,7 @@ s.waitForBoot{
 	//--buffer
 	~bufferForPen= Buffer.alloc(s, l, 2);
 	s.sync;
+	// for poem 49
 	~ge= Buffer.alloc(s, 8192, 2);
 	s.sync;
 
@@ -59,7 +60,7 @@ s.waitForBoot{
 	~speed = 0.00001;
 	~trails = 0.2;
 	~flip= 1;
-	~version = 8;
+	~version = 9;
 	~red = 1.0;
 	~green = 0.0;
 	~blue = 0.0;
@@ -69,7 +70,7 @@ s.waitForBoot{
 	u.drawFunc= {
 		//uncomment framerate display in the two lines below to gain some speed
 		Pen.color= Color.white;
-		Pen.stringAtPoint("func{sig.fold()2*9e3}"/*+"fps:"+u.frameRate.asInteger*/, Point(200, 20));
+		//Pen.stringAtPoint("func{sig.fold()2*9e3}"/*+"fps:"+u.frameRate.asInteger*/, Point(200, 200));
 		//--
 		~bufferForPen.getn(0, ~bufferForPen.numFrames-1, {|data| arr= data});
 		if(cnt==0, {
@@ -270,7 +271,7 @@ s.waitForBoot{
 				dict= ();
 				times.do{|i| dict.put(i.asBinaryDigits(windowLength).join.asSymbol, rule.asBinaryDigits[(times-1)-i])};
 
-				//--render
+				/* -> render */
 				while({yrt*cellHeight<height}, {
 					pat.do{|c, x|
 						if(c==1, {
@@ -278,6 +279,44 @@ s.waitForBoot{
 								Rect(
 									(~amp*x*cellWidth)+x*(cellWidth*1.1)*~amp*~flip/~trails.linlin(0,200,1,8),
 									/*wierd fail på linux hvis jeg bruger .range(1,8)*/
+									(~amp*x*cellWidth)+yrt*(cellHeight*5)*~amp,
+									cellWidth/~amp,
+									cellHeight/~flip));
+						});
+					};
+					pat= [0]++pat.slide(windowLength, 1).clump(windowLength).collect{|c|
+						dict.at(c.join.asSymbol);
+					}++[0];
+					yrt= yrt+krt;
+				});
+				Pen.fill;
+				//Pen.stroke;
+			},
+			9, {
+
+				/*
+				   first further attempt.
+				*/
+
+				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
+				var windowLength = 3;//(~speed*8).asInt;
+				var times= 6;
+				Pen.fillColor= Color(0.5,~green,~blue,1);
+				//rule= 256.rand.postln;
+				rule= (~trails/~amp*256).asInt;
+				krt = krt+~flip/~amp*0.6;
+				pat= 0.dup((width/cellWidth).round);
+				pat.put((pat.size/2).round, 1);
+				dict= ();
+				times.do{|i| dict.put(i.asBinaryDigits(windowLength).join.asSymbol, rule.asBinaryDigits[(times-1)-i])};
+
+				/* -> render */
+				while({yrt*cellHeight<height}, {
+					pat.do{|c, x|
+						if(c==1, {
+							Pen.addRect(
+								Rect(
+									(~amp*x*cellWidth)+x*(cellWidth*1.1)*~amp*~flip/~trails.linlin(0,200,1,8),
 									(~amp*x*cellWidth)+yrt*(cellHeight*5)*~amp,
 									cellWidth/~amp,
 									cellHeight/~flip));
@@ -387,6 +426,29 @@ OSCdef(\ctrlTrails, {arg msg, time, addr, port;
 	NetAddr("127.0.0.1", 57120).sendMsg('/painter/trails', val);
 }, '/tr', argTemplate: [nil, 3]);
 
+OSCdef(\ctrlRed, {arg msg, time, addr, port;
+	var val = msg[3];
+	//msg.postln;
+	NetAddr("127.0.0.1", 57120).sendMsg('/rgba/red', val);
+}, '/tr', argTemplate: [nil, 4]);
+
+OSCdef(\ctrlGreen, {arg msg, time, addr, port;
+	var val = msg[3];
+	//msg.postln;
+	NetAddr("127.0.0.1", 57120).sendMsg('/rgba/green', val);
+}, '/tr', argTemplate: [nil, 5]);
+
+OSCdef(\ctrlBlue, {arg msg, time, addr, port;
+	var val = msg[3];
+	//msg.postln;
+	NetAddr("127.0.0.1", 57120).sendMsg('/rgba/blue', val);
+}, '/tr', argTemplate: [nil, 6]);
+
+OSCdef(\ctrlAlpha, {arg msg, time, addr, port;
+	var val = msg[3];
+	//msg.postln;
+	NetAddr("127.0.0.1", 57120).sendMsg('/rgba/alpha', val);
+}, '/tr', argTemplate: [nil, 7]);
 
 
 y = List[
@@ -488,9 +550,10 @@ fork{
 			\source,
 			Pfunc({|envir|
 				if(envir.poem > 0){
-					~flag;
+					y.at(envir.poem).postcs;
+					/*~flag;
 					if(~flag == 1){
-						//~bufferForPen= Buffer.alloc(s, l, 2);
+						//~bufferForPen= BuffSendTrig.kr(Impulse.kr(24), 4, freq.at(0).linlin(20,1000,0.01,1.0); ); //reder.alloc(s, l, 2);
 						//s.sync; // okay to do sync while prog is running - maybe?
 						"/tfalse flag".postln;
 						~flag = 0;
@@ -504,7 +567,7 @@ fork{
 						y.at(envir.poem).postcs
 					}{
 						y.at(envir.poem).postcs
-					}
+					}*/
 					//"\t\tkån".postln;
 
 				}{
@@ -512,8 +575,8 @@ fork{
 					y.at(0).postcs;
 					//~bufferForPen.clear;
 					//"cleared Pen Buffer".postln;
-					"/ttrue flag".postln;
-					~flag = 1;
+					//"/ttrue flag".postln;
+					//~flag = 1;
 				}
 			}),
 			\dur,
@@ -529,47 +592,6 @@ fork{
 		.trace(\dur, prefix: "xdur: ");
 	).playN([2,3]);
 
-	/*Ndef(\u,
-	\setsrc -> Pbind(
-	\poem, Pseq([Pxrand((1..y.size-1), 2), 0], inf),
-	\source,
-	Pfunc({|envir|
-	if(envir.poem > 0){
-	//"\t\tkån".postln;
-	y.at(envir.poem).postcs
-	}{
-	//"\t\tsil".postln;
-	y.at(0).postcs
-	}
-	}),
-	\dur,
-	Prand( (10..30.0), inf)
-	).flatten
-	.trace(\poem, prefix: "upoem: ")
-	.trace(\dur, prefix: "udur: ");
-	).playN([2,3]);
-
-	Ndef(\o,
-	\setsrc -> Pbind(////////////////////////////////////////////
-	\poem, Pseq([Pxrand((1..y.size-1), 2), 0], inf),
-	\source,
-	Pfunc({|envir|
-	if(envir.poem > 0){
-	//"\t\tkån".postln;
-	y.at(envir.poem).postcs
-	}{
-	//"\t\tsil".postln;
-	y.at(0).postcs
-	}
-	}),
-	\dur,
-	Prand( (10..30.0), inf)
-	).flatten
-
-	.trace(\poem, prefix: "opoem: ")
-	.trace(\dur, prefix: "odur: ");
-	).playN([2,3]);*/
-
 
 	1.0.wait; // correct order ensured
 
@@ -584,10 +606,15 @@ fork{
 		followZero = ZeroCrossing.ar(sum);
 		# freq, hasFreq = Tartini.kr(sum, 0.93,1024,512,512);
 
-		SendTrig.kr(Impulse.kr(24), 0, followAmp; );
-		SendTrig.kr(Impulse.kr(24), 1, followCrest; );
-		SendTrig.kr(Impulse.kr(24), 2, followZero*0.0005; );
-		SendTrig.kr(Impulse.kr(24), 3, freq.at(0).linlin(20,1000,0.01,1.0); );
+		SendTrig.kr(Impulse.kr(10), 0, followAmp; );
+		SendTrig.kr(Impulse.kr(10), 1, followCrest; );
+		SendTrig.kr(Impulse.kr(10), 2, followZero*0.0005; );
+		SendTrig.kr(Impulse.kr(10), 3, freq.at(0).linlin(20,1000,0.01,1.0); );
+		// four sendtrigs on 24 Hz is okay. more sendtrigs seems to overflood if not set to 10 Hz.
+		//SendTrig.kr(Impulse.kr(10), 4, freq.at(0).linlin(20,1000,0.01,1.0); ); //r
+		SendTrig.kr(Impulse.kr(10), 5, freq.at(0).linlin(20,1000,0.5,1.0); ); //g
+		SendTrig.kr(Impulse.kr(10), 6, freq.at(0).linlin(20,1000,0.5,1.0); ); //b
+		//SendTrig.kr(Impulse.kr(10), 7, freq.at(0).linlin(20,1000,0.01,1.0); ); //a
 
 		RecordBuf.ar(HPF.ar((sum*3), 40), ~bufferForPen);
 

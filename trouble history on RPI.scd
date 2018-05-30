@@ -158,7 +158,7 @@ going to sleep
 //size l=900, h=900 w=l*1.6, 8192*10 mem, fps 40, OSC rate 24 Hz
 -- endurance test
 -- going for a walk
-15:51
+16:23-
 
 
 
