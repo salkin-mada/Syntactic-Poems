@@ -156,6 +156,7 @@ going to sleep
 --going for 40 FPS
 
 //size l=900, h=900 w=l*1.6, 8192*10 mem, fps 40, OSC rate 24 Hz
+<<<<<<< HEAD
 -- longer test
 -- going for a walk, left the _house 16:28
 16:23-17:12 = 49 mins -> smooth, manual abort -> very stable
@@ -181,6 +182,11 @@ rebooting jacky sclang ssynth all. -> going quick run -> seems stable again -> c
 note: should do long endurance test, also testing without using EMPTY poem.
 
 
+=======
+-- endurance test
+-- going for a walk
+16:23-
+>>>>>>> ba1b0750102a1c51de6c21a9fff4590b3c7073b8
 
 
 
