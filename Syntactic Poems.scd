@@ -1,53 +1,62 @@
-( // use this for raspi
-// s.options.outDevice_("hw:1");
-// s.options.inDevice_("hw:1");
-s.options.numOutputBusChannels_(4);
-s.options.numInputBusChannels_(2);
-s.options.numWireBufs(1024);
+/*
+sudo nano /etc/lightdm/lightdm.conf
+in -> [Seat:*]
+# dont sleep the screen
+xserver-command=X -s 0 dpms
+
+nano ~/.config/lxsession/LXDE-pi/autostart
+# idle mouse curser when inactive
+@uncluter -display :0 -noevents -grab
+*/
+
+/*
+cleaned up in LXDE-pi/xsessions.conf
+~.config/lxsessions/LXDE-pi/autostart
+*/
+
+
+
+/*( // use this for raspi
 s.options.memSize_(8192*10);
-s.options.sampleRate = 44100; /*96e3*/
-s.options.maxNodes = 2048;
 s.boot;
-s.doWhenBooted{
+/*s.doWhenBooted{
 	("\n*** memSize; "++s.options.memSize).post;
 	s.recChannels_(2);
 	("\n~~~~~~~~~~~~~~~~~~~~~~~" ++ "\n*** Overwriting recChannels to: " ++ s.recChannels ++ "\n").post;
-}
-)
-
-
-
-
+}*/
+)*/
 
 
 
 (
-
-l= 1024;    //global window/buffer size in pixels/samples
-s.latency= 0.05;
+s.options.memSize_(8192*10);
+l= 900;    //global window/buffer size in pixels/samples
+//s.latency= 0.05;
 
 s.waitForBoot{
 	//--variables
 	var theta= 0;
-	var fps= 60;
+	var fps= 40;
 	var arr= Array.fill(l, 0);
 	var cnt= 0;
 
 	//--window setup
-	var width= l, height= l;
-	var w= Window("gendar_theta", Rect(99, 20, width, height), true);
-	var u= UserView(w, Rect(0, 0, width*2, height));
+	var width= l*1.60, height= l;
+	var w= Window("gendar_theta", Rect(0, 0, width, height), true);
+	var u= UserView(w, Rect(0, 0, width/**2*/, height));
 	var w2= width*0.5;
 	var h2= height*0.5;
 	var cellWidth= 10, cellHeight= 10;
 
 	//--buffer
-	b= Buffer.alloc(s, l, 2);
+	~bufferForPen= Buffer.alloc(s, l, 2);
+	s.sync;
+	~ge= Buffer.alloc(s, 8192, 2);
 	s.sync;
 
 	//--interface
 	~amp = 0.3;
-	~speed = 0.0000001;
+	~speed = 0.00001;
 	~trails = 0.2;
 	~flip= 1;
 	~version = 8;
@@ -60,9 +69,9 @@ s.waitForBoot{
 	u.drawFunc= {
 		//uncomment framerate display in the two lines below to gain some speed
 		Pen.color= Color.white;
-		Pen.stringAtPoint("func{sig.fold()2*9e3}"+u.frameRate, Point(200, 20));
+		Pen.stringAtPoint("func{sig.fold()2*9e3}"/*+"fps:"+u.frameRate.asInteger*/, Point(200, 20));
 		//--
-		b.getn(0, b.numFrames-1, {|data| arr= data});
+		~bufferForPen.getn(0, ~bufferForPen.numFrames-1, {|data| arr= data});
 		if(cnt==0, {
 			Pen.fillColor= Color.black;	//erase first time
 			Pen.fillRect(Rect(0, 0, width, height));
@@ -267,7 +276,8 @@ s.waitForBoot{
 						if(c==1, {
 							Pen.addRect(
 								Rect(
-									(~amp*x*cellWidth)+x*(cellWidth*1.1)*~amp*~flip/~trails.range(1,8),
+									(~amp*x*cellWidth)+x*(cellWidth*1.1)*~amp*~flip/~trails.linlin(0,200,1,8),
+									/*wierd fail på linux hvis jeg bruger .range(1,8)*/
 									(~amp*x*cellWidth)+yrt*(cellHeight*5)*~amp,
 									cellWidth/~amp,
 									cellHeight/~flip));
@@ -285,16 +295,18 @@ s.waitForBoot{
 		);
 		theta= theta/**~speed*/;
 		cnt= cnt+1;
+
 	};
 
 	//--window management
 	u.clearOnRefresh= false;
 	w.onClose= {
-		b.free;
+		~bufferForPen.free;
 	};
 
 	w.front;
 	CmdPeriod.doOnce({if(w.isClosed.not, {w.close})});
+	u.frameRate_(fps);
 	u.animate= true;
 };
 
@@ -342,35 +354,43 @@ OSCdef(\alpha, {arg msg, time;
 	var val = msg[1];
 	~alpha = val;
 }.inEnvir, '/rgba/alpha');
-
-
 )
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 (
+OSCdef(\ctrlAmp, {arg msg, time, addr, port;
+	var val = msg[3];
+	//msg.postln;
+	NetAddr("127.0.0.1", 57120).sendMsg('/painter/amp', val);
+}, '/tr', argTemplate: [nil, 0]);
+
+OSCdef(\ctrlSpeed, {arg msg, time, addr, port;
+	var val = msg[3];
+	//msg.postln;
+	NetAddr("127.0.0.1", 57120).sendMsg('/painter/speed', val);
+}, '/tr', argTemplate: [nil, 1]);
+
+OSCdef(\ctrlFlip, {arg msg, time, addr, port;
+	var val = msg[3];
+	//msg.postln;
+	NetAddr("127.0.0.1", 57120).sendMsg('/painter/flip', val);
+}, '/tr', argTemplate: [nil, 2]);
+
+OSCdef(\ctrlTrails, {arg msg, time, addr, port;
+	var val = msg[3];
+	//msg.postln;
+	NetAddr("127.0.0.1", 57120).sendMsg('/painter/trails', val);
+}, '/tr', argTemplate: [nil, 3]);
+
+
+
 y = List[
-	{Silence.ar},
+	{/*Silence.ar*/},
 	{x=LPF18.ar(DPW4Saw.ar(LFNoise0.ar(3.1*Ndef(\x).ar)),10%Ndef(\x).ar,1.29);Limiter.ar(SinOsc.ar([x%2e2,x%3e2]/x),0.2).flatten},
 	{x=LPF18.ar(DPW4Saw.ar(Saw.ar(5e3*Ndef(\x).ar.abs)),5e-2*Ndef(\x).ar,0.1);Limiter.ar(SinOsc.ar([x%40,x%70*Ndef(\x).ar]/x),0.3).flatten},
 	{x=LPF18.ar(DPW4Saw.ar(Saw.ar(0.07*Ndef(\x).ar)),0.001*Ndef(\x).ar,0.9);Limiter.ar(SinOsc.ar([x+1e2,x+1e2]/x),0.2).flatten},
@@ -419,46 +439,22 @@ y = List[
 	{x=LPFVS6.ar(SinGrain.ar(Impulse.ar(10),0.1,DPW4Saw.ar(SinGrain.ar(Impulse.ar(30), 0.1, Ndef(\x).ar.abs*50))),Ndef(\x).ar.range(2000,30),Ndef(\x).ar.abs);Limiter.ar(DPW4Saw.ar([x%Ndef(\x).ar.range(400,x.abs),x%Ndef(\x).ar.range(701,x.abs)]),0.3).flatten},
 	{x=LPFVS6.ar(SinGrain.ar(Impulse.ar(10),0.1,DPW4Saw.ar(SinGrain.ar(Impulse.ar(30), 0.1, Ndef(\x).ar.abs*50))),Ndef(\x).ar.range(2000,30),Ndef(\x).ar.abs);Limiter.ar(DPW4Saw.ar([x%Ndef(\x).ar.range(200,x.abs),x%Ndef(\x).ar.range(701,x.abs)]),0.3).flatten},
 	{SinOsc.ar([420,430],0,0.8)},
-	{g=LocalBuf(8192,4);d=Dust.kr(0.2)+Dust2.kr([2,1]);r=PlayBuf.ar(2,g,TExpRand.kr(0.01,19,d),d,0,1)/4;FFT(g,d+(d*r));r.clip2(1).flatten},
+	{/*~ge=LocalBuf(8192,2);*/~de=Dust.kr(0.2)+Dust2.kr([2,1]);~re=PlayBuf.ar(2,~ge,TExpRand.kr(0.01,19,~de),~de,0,1)/4;FFT(~ge,~de+(~de*~re));~re.clip2(1).flatten},
 	{t=(1..5);f=t*9999*Pulse.ar(1);d=SinOsc.ar(1).range(0,3);e=t/10;k=SinGrain.ar(Dust.ar(e),d,f).sum;Squiz.ar(k!2,4,1,10)},
 	{t=(1..5);f=t*299*Pulse.ar(1);d=SinOsc.ar(1).range(0,3);e=t/10;k=SinGrain.ar(Dust.ar(e),d,f).sum;Squiz.ar(k!2,4,1,10)}
 ];
-)
-y.size-1
-(y.size-1).rand;
+
 
 /*
 approoveed,
 44
 33
-24 -- undersøg de bløde ting der kommer frem
-23 -- den gør det...
+21 er nice
+24              -- undersøg de bløde ting der kommer frem
+23 er nice      -- den gør det...
 */
 
-(
-OSCdef(\ctrlAmp, {arg msg, time, addr, port;
-	var val = msg[3];
-	//msg.postln;
-	NetAddr("127.0.0.1", 57120).sendMsg('/painter/amp', val);
-}, '/tr', argTemplate: [nil, 0]);
 
-OSCdef(\ctrlSpeed, {arg msg, time, addr, port;
-	var val = msg[3];
-	//msg.postln;
-	NetAddr("127.0.0.1", 57120).sendMsg('/painter/speed', val);
-}, '/tr', argTemplate: [nil, 1]);
-
-OSCdef(\ctrlFlip, {arg msg, time, addr, port;
-	var val = msg[3];
-	//msg.postln;
-	NetAddr("127.0.0.1", 57120).sendMsg('/painter/flip', val);
-}, '/tr', argTemplate: [nil, 2]);
-
-OSCdef(\ctrlTrails, {arg msg, time, addr, port;
-	var val = msg[3];
-	//msg.postln;
-	NetAddr("127.0.0.1", 57120).sendMsg('/painter/trails', val);
-}, '/tr', argTemplate: [nil, 3]);
 
 
 
@@ -468,7 +464,7 @@ fork{
 			//\poem, Pseq([Pxrand((1..y.size-1), 2), 0], inf),
 			//\poem, Pseq([Pxrand((1..y.size-1), 2), 49], inf),
 			//\poem, Pseq([50,49], inf), // nice syntetisk chill
-			\poem, Pseq([34,41,50,49], inf),
+			\poem, Pseq([49,34,41,49,50,23,0,45,21,49,23/*13*/,46,0], inf),
 			/*Pfunc({|envir|
 			var chosen, flag = false, count = 0;
 			//flag.postln;
@@ -492,19 +488,40 @@ fork{
 			\source,
 			Pfunc({|envir|
 				if(envir.poem > 0){
+					~flag;
+					if(~flag == 1){
+						//~bufferForPen= Buffer.alloc(s, l, 2);
+						//s.sync; // okay to do sync while prog is running - maybe?
+						"/tfalse flag".postln;
+						~flag = 0;
+					};
+
+					if(envir.poem == 49){
+						//~ge.clear;
+						//~ge.free;
+						//s.sync; // needed?
+						//"g was cleared".postln;
+						y.at(envir.poem).postcs
+					}{
+						y.at(envir.poem).postcs
+					}
 					//"\t\tkån".postln;
-					y.at(envir.poem).postcs
+
 				}{
 					//"\t\tsil".postln;
-					y.at(0).postcs
+					y.at(0).postcs;
+					//~bufferForPen.clear;
+					//"cleared Pen Buffer".postln;
+					"/ttrue flag".postln;
+					~flag = 1;
 				}
 			}),
 			\dur,
 			Pfunc({|envir|
 				if(envir.poem > 0){
-					(1..20.0).choose;
+					(2..10.0).choose;
 				}{
-					10;
+					7;
 				}
 			}),
 		).flatten
@@ -533,7 +550,7 @@ fork{
 	).playN([2,3]);
 
 	Ndef(\o,
-	\setsrc -> Pbind(
+	\setsrc -> Pbind(////////////////////////////////////////////
 	\poem, Pseq([Pxrand((1..y.size-1), 2), 0], inf),
 	\source,
 	Pfunc({|envir|
@@ -554,23 +571,26 @@ fork{
 	).playN([2,3]);*/
 
 
-	1.0.wait; // correct order ensured.. hmm.
+	1.0.wait; // correct order ensured
 
 	Ndef(\protect, {var in, freq, hasFreq, lim, followAmp, followCrest, followZero, follow, sum;
 		in = In.ar(2,2);
 		in = BHiShelf.ar(in, 1200, db: -10);
 		lim = Limiter.ar(in);
 		sum = LeakDC.ar(lim*0.7);
-		RecordBuf.ar(HPF.ar((sum*3), 40), b);
+
 		followAmp = Amplitude.kr(sum);
 		followCrest = Crest.kr(sum);
 		followZero = ZeroCrossing.ar(sum);
 		# freq, hasFreq = Tartini.kr(sum, 0.93,1024,512,512);
 
-		SendTrig.kr(Impulse.kr(100), 0, followAmp; );
-		SendTrig.kr(Impulse.kr(100), 1, followCrest; );
-		SendTrig.kr(Impulse.kr(100), 2, followZero*0.0005; );
-		SendTrig.kr(Impulse.kr(100), 3, freq.at(0).linlin(20,1000,0.01,1.0); );
+		SendTrig.kr(Impulse.kr(24), 0, followAmp; );
+		SendTrig.kr(Impulse.kr(24), 1, followCrest; );
+		SendTrig.kr(Impulse.kr(24), 2, followZero*0.0005; );
+		SendTrig.kr(Impulse.kr(24), 3, freq.at(0).linlin(20,1000,0.01,1.0); );
+
+		RecordBuf.ar(HPF.ar((sum*3), 40), ~bufferForPen);
+
 		sum;
 
 	}).play;
@@ -578,6 +598,17 @@ fork{
 
 
 })
+
+
+
+
+
+
+
+
+
+
+
 
 
 
