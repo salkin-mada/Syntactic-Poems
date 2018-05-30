@@ -156,9 +156,31 @@ going to sleep
 --going for 40 FPS
 
 //size l=900, h=900 w=l*1.6, 8192*10 mem, fps 40, OSC rate 24 Hz
--- endurance test
--- going for a walk
-15:51
+-- longer test
+-- going for a walk, left the _house 16:28
+16:23-17:12 = 49 mins -> smooth, manual abort -> very stable
+
+continuing normal DEV
+
+added some offset in draw init pos, bad choice
+-> also did some clean up in pattern, suddenly synth is doing the "lavine" again.
+
+rebooting jacky sclang ssynth all. -> going quick run -> seems stable again -> cmd-period
+
+-----------ctrl all colors. adding OSC streams. eating more bandwidth
+18:26-18:28 -> coursing "lavine" and black screen
+
+-----------attempting the same but lowering the OSC Freq from 24 to 10 Hz
+18:29-18:35 -> cmd+. -> seems stable
+
+
+
+
+
+
+note: should do long endurance test, also testing without using EMPTY poem.
+
+
 
 
 
