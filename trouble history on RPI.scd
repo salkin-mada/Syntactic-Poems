@@ -156,7 +156,6 @@ going to sleep
 --going for 40 FPS
 
 //size l=900, h=900 w=l*1.6, 8192*10 mem, fps 40, OSC rate 24 Hz
-<<<<<<< HEAD
 -- longer test
 -- going for a walk, left the _house 16:28
 16:23-17:12 = 49 mins -> smooth, manual abort -> very stable
@@ -217,20 +216,107 @@ Fixed by ->
 15:42-15:50 -> "lavine" - det er noget andet fokkung lort der gær det
 
 -------------run on windows
-15:57-16:50 all good
-16:50-17:40 all good, nothing.
-
--------------run on windows
-15:57
+15:57-21:14 = 5 hours, 17 mins -> manual abort -> all good, OK.
 
 
+------------RPI same as last RPI test but no wait for boot method only fork with AppClock
+18:07-18:29 -> yellow server meters.... sheiss
+
+
+------------same identical type run on RPI
+------------BUT raising server mem 8192*30 and no qjackctl, default jack start via s.boot
+------------post DUMP
+booting server 'localhost' on address: 127.0.0.1:57110
+Found 0 LADSPA plugins
+jackdmp 1.9.11
+Copyright 2001-2005 Paul Davis and others.
+Copyright 2004-2014 Grame.
+jackdmp comes with ABSOLUTELY NO WARRANTY
+This is free software, and you are welcome to redistribute it
+under certain conditions; see the file COPYING for details
+JACK server starting in realtime mode with priority 10
+self-connect-mode is "Don't restrict self connect requests"
+audio_reservation_init
+Acquire audio card Audio1
+creating alsa driver ... hw:Device|hw:Device|1024|3|44100|0|0|nomon|swmeter|-|32bit
+configuring for 44100Hz, period = 1024 frames (23.2 ms), buffer = 3 periods
+ALSA: final selected sample format for capture: 16bit little-endian
+ALSA: use 3 periods for capture
+ALSA: final selected sample format for playback: 16bit little-endian
+ALSA: use 3 periods for playback
+JackDriver: client name is 'SuperCollider'
+SC_AudioDriver: sample rate = 44100.000000, driver's block size = 1024
+JackDriver: connected  system:capture_1 to SuperCollider:in_1
+JackDriver: connected  SuperCollider:out_1 to system:playback_1
+JackDriver: connected  SuperCollider:out_2 to system:playback_2
+SuperCollider 3 server ready.
+JackDriver: max output latency 69.7 ms
+Requested notification messages from server 'localhost'
+localhost: server process's maxLogins (1) matches with my options.
+localhost: keeping clientID (0) as confirmed by server process.
+Shared memory server interface initialized
+------------------
+18:39-18:55 -> "Lavining"
+
+--------------trying same but upping priority..
+--------------Dump
+-> localhost
+booting server 'localhost' on address: 127.0.0.1:57110
+Found 0 LADSPA plugins
+jackdmp 1.9.11
+Copyright 2001-2005 Paul Davis and others.
+Copyright 2004-2014 Grame.
+jackdmp comes with ABSOLUTELY NO WARRANTY
+This is free software, and you are welcome to redistribute it
+under certain conditions; see the file COPYING for details
+JACK server starting in realtime mode with priority 75
+self-connect-mode is "Don't restrict self connect requests"
+audio_reservation_init
+Acquire audio card Audio1
+creating alsa driver ... hw:1|hw:1|1024|3|44100|0|0|nomon|swmeter|soft-mode|32bit
+configuring for 44100Hz, period = 1024 frames (23.2 ms), buffer = 3 periods
+ALSA: final selected sample format for capture: 16bit little-endian
+ALSA: use 3 periods for capture
+ALSA: final selected sample format for playback: 16bit little-endian
+ALSA: use 3 periods for playback
+JackDriver: client name is 'SuperCollider'
+SC_AudioDriver: sample rate = 44100.000000, driver's block size = 1024
+JackDriver: connected  system:capture_1 to SuperCollider:in_1
+JackDriver: connected  SuperCollider:out_1 to system:playback_1
+JackDriver: connected  SuperCollider:out_2 to system:playback_2
+SuperCollider 3 server ready.
+JackDriver: max output latency 69.7 ms
+Requested notification messages from server 'localhost'
+localhost: server process's maxLogins (1) matches with my options.
+localhost: keeping clientID (0) as confirmed by server process.
+Shared memory server interface initialized
+----------------
+19:05-19:21 -> "lavine"
+
+
+-- wheres the problem? drawFunc to heavy for RPI and thereby messing with scheduling order?
+-------------RPI, no drawFunc, only audio, no EMPTY poem.
+19:25-19:47 all is good
+cont 19:47-20:04 all is good
+cont 20:04-20:23 OK
+cont 20:23-20:53 OK
+
+
+------------RPI same BUT with drawFunc and s.latency = 0.05
+20:55-21:13 -> "lavine"
+
+------------OSC freq 5 Hz... s.latency = 0.05
+21:18-21:32 all good
+21:32-23:21 OK
+23:21-23:58 OK no "lavine" BUT clicks on sound, maybe somthing to do with s.latency?
+
+-----------to do tjek stability of lastStableVersion with default server latency
+-----------what happens after 2-3 hours?
 
 
 
 
-
-
-note: should do long endurance test, also testing without using EMPTY poem.
+note: should do long endurance test on RPI!
 
 
 
