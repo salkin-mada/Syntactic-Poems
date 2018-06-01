@@ -214,8 +214,19 @@ Fixed by ->
 11:40-12:30 = 50 mins -> "lavine"
 
 ----------- no clearing in pattern, server latency default, no Empty poem, FPS 20
-15:42-15:50 -> "lavine" - det er noget andet fokkung lort der gær det.
-tjek på windows..
+15:42-15:50 -> "lavine" - det er noget andet fokkung lort der gær det
+
+-------------run on windows
+15:57-16:50 all good
+16:50-17:40 all good, nothing.
+
+-------------run on windows
+15:57
+
+
+
+
+
 
 
 
