@@ -29,7 +29,7 @@ s.boot;
 
 
 (
-s.options.memSize_(8192*10);
+//s.options.memSize_(8192*10);
 l= 900;    //global window/buffer size in pixels/samples
 //s.latency= 0.05;
 
