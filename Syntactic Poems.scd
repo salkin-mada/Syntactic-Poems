@@ -36,12 +36,12 @@ l= 900;    //global window/buffer size in pixels/samples
 s.waitForBoot{
 	//--variables
 	var theta= 0;
-	var fps= 40;
+	var fps= 20;
 	var arr= Array.fill(l, 0);
 	var cnt= 0;
 
 	//--window setup
-	var width= l*1.60, height= l;
+	var width= l/**1.60*/, height= l;
 	var w= Window("gendar_theta", Rect(0, 0, width, height), true);
 	var u= UserView(w, Rect(0, 0, width/**2*/, height));
 	var w2= width*0.5;
@@ -51,6 +51,7 @@ s.waitForBoot{
 	//--buffer
 	~bufferForPen= Buffer.alloc(s, l, 2);
 	s.sync;
+
 	// for poem 49
 	~ge= Buffer.alloc(s, 8192, 2);
 	s.sync;
@@ -62,9 +63,9 @@ s.waitForBoot{
 	~flip= 1;
 	~version = 9;
 	~red = 1.0;
-	~green = 0.0;
-	~blue = 0.0;
-	~alpha = 0.9;
+	~green = 1.0;
+	~blue = 1.0;
+	~alpha = 1.0;
 
 	//--main loop
 	u.drawFunc= {
@@ -83,24 +84,83 @@ s.waitForBoot{
 		Pen.strokeColor= Color.new(~red, ~green, ~blue, ~alpha);
 
 		switch(~version,
-			0, {									//line
-				Pen.rotate(theta, w2, h2);
-				Pen.translate(0, h2);
+			0, {			//redone
+				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
+				var windowLength = 3;
+				var times= 6;
+				Pen.fillColor= Color.white;
+				rule= (~trails/~amp*256).asInt;
+				krt = krt+~flip/~amp*0.3;
+				pat= 0.dup((width/cellWidth).round);
+				pat.put((pat.size/2).round, 1);
+				dict= ();
+				times.do{|i| dict.put(i.asBinaryDigits(windowLength).join.asSymbol, rule.asBinaryDigits[(times-1)-i])};
+
+				/* -> render */
+				while({yrt*cellHeight<height}, {
+					pat.do{|c, x|
+						if(c==1, {
+							Pen.addRect(
+								Rect(
+									(~amp*x*cellWidth)+x*(cellWidth*1.1)*~amp*~flip/~trails.linlin(0,200,1,8),
+									(~amp*x*cellWidth)+yrt*(cellHeight*5)*~amp*~flip,
+									cellWidth/~amp*2,
+									cellHeight/~flip*2));
+						});
+					};
+					pat= [0]++pat.slide(windowLength, 1).clump(windowLength).collect{|c|
+						dict.at(c.join.asSymbol);
+					}++[0];
+					yrt= yrt+krt;
+				});
+				//provoke
+				/*Pen.rotate(theta*~amp, w2, h2);
+				Pen.translate(0, 20);
 				arr.do{|y, x|
 					var p= Point(x, y*(height*~amp));
-					if(x==0, {Pen.moveTo(p)}, {Pen.lineTo(p)});
-				};
+					if(x==0, {Pen.moveTo(p)}, {Pen.lineTo(p/yrt)});
+				};*/
 				Pen.stroke;
 			},
-			1, {									//warp
-				Pen.rotate(theta, w2, h2);
-				Pen.translate(w2, h2);
+			1, {									//praw it rev
+								var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
+				var windowLength = 3;
+				var times= 6;
+				Pen.fillColor= Color.white;
+				rule= (0..256).choose;
+				krt = krt+~flip/~amp*0.3;
+				pat= 0.dup((width/cellWidth).round);
+				pat.put((pat.size/2).round, 1);
+				dict= ();
+				times.do{|i| dict.put(i.asBinaryDigits(windowLength).join.asSymbol, rule.asBinaryDigits[(times-1)-i])};
+
+				/* -> render */
+				while({yrt*cellHeight<height}, {
+					pat.do{|c, x|
+						if(c==1, {
+							Pen.addRect(
+								Rect(
+									(~amp*x*cellWidth)+x*(cellWidth*1.18)*~amp*~flip/~trails.linlin(0,200,1,8),
+									(~amp*x*cellWidth)+yrt*(cellHeight*3)*~amp*~flip,
+									cellWidth/~amp*2.5,
+									cellHeight/~flip*1.5));
+						});
+					};
+					pat= [0]++pat.slide(windowLength, 1).clump(windowLength).collect{|c|
+						dict.at(c.join.asSymbol);
+					}++[0];
+					yrt= yrt+krt;
+				});
+
+				Pen.rotate(90*~amp, cellWidth/~amp, cellHeight/~flip);
+				/*Pen.translate(w2, h2);
 				arr.do{|y, x|
 
-					var p= Point(x*~amp, y*~amp).rotate(y*2pi);
-					if(x==0, {Pen.moveTo(p)}, {Pen.lineTo(p)});
-				};
+					var p= Point(x*~amp, y*~amp).rotate(y*8pi);
+					if(x==0, {Pen.moveTo(p*~amp)}, {Pen.lineTo(p*~flip+yrt)});
+				};*/
 				Pen.stroke;
+				//Pen.fill;
 			},
 			2, {									//flower
 				Pen.translate(w2, h2);
@@ -151,7 +211,7 @@ s.waitForBoot{
 							Pen.moveTo(p)
 						},
 						{
-							Pen.translate(i.range(0,0.001),0);
+							Pen.translate(i.linlin(0.0,1.0,0.0,0.001)/*range(0,0.001)--fail på linux*/,0);
 							//Pen.rotate(0, 0, 130*~speed);
 							Pen.lineTo(p.rotate(a))
 						}
@@ -180,7 +240,12 @@ s.waitForBoot{
 						});
 					};
 					pat= [0]++pat.slide(windowLength, 1).clump(windowLength).collect{|c|
-						dict.at(c.join.asSymbol);
+						dict.at(c.join.asSymbol);/*Pen.rotate(theta*~amp, w2, h2);
+				Pen.translate(0, 20);
+				arr.do{|y, x|
+					var p= Point(x, y*(height*~amp));
+					if(x==0, {Pen.moveTo(p)}, {Pen.lineTo(p/yrt)});
+				};*/
 					}++[0];
 					yrt= yrt+krt;
 				});
@@ -236,7 +301,12 @@ s.waitForBoot{
 				//--render
 				while({yrt*cellHeight<height}, {
 					pat.do{|c, x|
-						if(c==1, {
+						if(c==1, {/*Pen.rotate(theta*~amp, w2, h2);
+				Pen.translate(0, 20);
+				arr.do{|y, x|
+					var p= Point(x, y*(height*~amp));
+					if(x==0, {Pen.moveTo(p)}, {Pen.lineTo(p/yrt)});
+				};*/
 							Pen.addRect(
 								Rect(
 									(~amp*x*cellWidth)+x*cellWidth*~amp*~flip*5,
@@ -301,8 +371,8 @@ s.waitForBoot{
 				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
 				var windowLength = 3;//(~speed*8).asInt;
 				var times= 6;
-				Pen.fillColor= Color(0.5,~green,~blue,1);
-				//rule= 256.rand.postln;
+				Pen.fillColor= Color(0.5,0.5,~blue,1);
+				//rule= 256.rand.postln;/*Pen.rotate(theta*~amp, w2, h2);
 				rule= (~trails/~amp*256).asInt;
 				krt = krt+~flip/~amp*0.6;
 				pat= 0.dup((width/cellWidth).round);
@@ -319,7 +389,12 @@ s.waitForBoot{
 									(~amp*x*cellWidth)+x*(cellWidth*1.1)*~amp*~flip/~trails.linlin(0,200,1,8),
 									(~amp*x*cellWidth)+yrt*(cellHeight*5)*~amp,
 									cellWidth/~amp,
-									cellHeight/~flip));
+									Pen.translate(w2, h2);
+				arr.do{|y, x|
+
+					var p= Point(x*~amp, y*~amp).rotate(y*8pi);
+					if(x==0, {Pen.moveTo(p*~amp)}, {Pen.lineTo(p*~flip+yrt)});
+				};cellHeight/~flip));
 						});
 					};
 					pat= [0]++pat.slide(windowLength, 1).clump(windowLength).collect{|c|
@@ -398,7 +473,6 @@ OSCdef(\alpha, {arg msg, time;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 
 (
@@ -518,6 +592,13 @@ approoveed,
 
 
 
+/*
+ovrvejs
+41 alarm alarm, okay?
+*/
+
+
+
 
 
 fork{
@@ -526,7 +607,11 @@ fork{
 			//\poem, Pseq([Pxrand((1..y.size-1), 2), 0], inf),
 			//\poem, Pseq([Pxrand((1..y.size-1), 2), 49], inf),
 			//\poem, Pseq([50,49], inf), // nice syntetisk chill
-			\poem, Pseq([49,34,41,49,50,23,0,45,21,49,23/*13*/,46,0], inf),
+
+			\poem, Pxrand([49,50,49,51,49,49], inf),
+
+			// den sidste brugte i stability log --> \poem, Pseq([49,34,41,49,50,23,0,45,21,49,23,46,0], inf),
+
 			/*Pfunc({|envir|
 			var chosen, flag = false, count = 0;
 			//flag.postln;
@@ -557,9 +642,9 @@ fork{
 						//s.sync; // okay to do sync while prog is running - maybe?
 						"/tfalse flag".postln;
 						~flag = 0;
-					};
+					};*/
 
-					if(envir.poem == 49){
+					/*if(envir.poem == 49){
 						//~ge.clear;
 						//~ge.free;
 						//s.sync; // needed?
@@ -582,16 +667,26 @@ fork{
 			\dur,
 			Pfunc({|envir|
 				if(envir.poem > 0){
-					(2..10.0).choose;
+					(2..20.0).choose;
 				}{
-					7;
+					(2..5.0).choose;
 				}
-			}),
+			})
 		).flatten
 		.trace(\poem, prefix: "xpoem: ")
 		.trace(\dur, prefix: "xdur: ");
 	).playN([2,3]);
 
+	Pdef(\CtrlVersion,
+		Pbind(
+			\degree, Rest(), // stop sending midi to generic piano
+			\version, 1,//Pbrown(0,1,1,inf),
+			\versionSend, Pfunc({|envir|
+				~version = envir.version;
+			}),
+			\dur, Pbrown(0.1,2)
+		).trace
+	).play(quant:0);
 
 	1.0.wait; // correct order ensured
 
@@ -610,10 +705,11 @@ fork{
 		SendTrig.kr(Impulse.kr(10), 1, followCrest; );
 		SendTrig.kr(Impulse.kr(10), 2, followZero*0.0005; );
 		SendTrig.kr(Impulse.kr(10), 3, freq.at(0).linlin(20,1000,0.01,1.0); );
+
 		// four sendtrigs on 24 Hz is okay. more sendtrigs seems to overflood if not set to 10 Hz.
 		//SendTrig.kr(Impulse.kr(10), 4, freq.at(0).linlin(20,1000,0.01,1.0); ); //r
-		SendTrig.kr(Impulse.kr(10), 5, freq.at(0).linlin(20,1000,0.5,1.0); ); //g
-		SendTrig.kr(Impulse.kr(10), 6, freq.at(0).linlin(20,1000,0.5,1.0); ); //b
+		//SendTrig.kr(Impulse.kr(10), 5, freq.at(0).linlin(20,1000,0.5,1.0); ); //g
+		//SendTrig.kr(Impulse.kr(10), 6, freq.at(0).linlin(20,1000,0.5,1.0); ); //b
 		//SendTrig.kr(Impulse.kr(10), 7, freq.at(0).linlin(20,1000,0.01,1.0); ); //a
 
 		RecordBuf.ar(HPF.ar((sum*3), 40), ~bufferForPen);

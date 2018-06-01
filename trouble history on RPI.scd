@@ -175,18 +175,51 @@ rebooting jacky sclang ssynth all. -> going quick run -> seems stable again -> c
 18:29-18:35 -> cmd+. -> seems stable
 
 
+--bplayin volley bal
 
+--sleeping
+
+--------------
+13:40-13:54 -> added ~version ctrl pbind -> all is stable
+
+
+working with switch func in drawFunc
+
+-------------testing without using EMPTY poem.
+16:04-15:00 -> yellow server metersss ... sjeis
+
+-- and then
+compiling class library...
+Found 731 primitives.
+ERROR: There is a discrepancy.
+numClassDeps 0   gNumClasses 82
+Library has not been compiled successfully.
+
+-- same after reboot.. wow.
+Fixed by ->
+'rm ~/.config/SuperCollider/sc_ide_conf.yaml'
+'cp superCollierStandaloneRPI2/sc_ide_conf_temp.yaml ~/.config/SuperCollider/sc_ide_conf.yaml'
+-> sclang -> compile done
+
+-----------changed s.latency = 00.5; testing without using EMPTY poem.
+09:41-10:00 -> "lavine"
+
+----------- clearing ~ge in pattern,no Empty poem
+10:09-10:10 -> imediate "lavine" -> reboot
+
+----------- clearing ~ge in pattern, server latency default, no Empty poem
+11:33-11:37 -> "lavine"
+
+----------- no clearing in pattern, server latency default, no Empty poem
+11:40-12:30 = 50 mins -> "lavine"
+
+----------- no clearing in pattern, server latency default, no Empty poem, FPS 20
+15:42-15:50 -> "lavine" - det er noget andet fokkung lort der gær det.
+tjek på windows..
 
 
 
 note: should do long endurance test, also testing without using EMPTY poem.
-
-
-=======
--- endurance test
--- going for a walk
-16:23-
->>>>>>> ba1b0750102a1c51de6c21a9fff4590b3c7073b8
 
 
 
