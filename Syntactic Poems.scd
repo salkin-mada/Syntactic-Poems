@@ -34,6 +34,9 @@ s.latency= 0.05;
 s.boot;
 )
 
+
+
+
 (
 l= 900;    //global window/buffer size in pixels/samples
 {
@@ -607,12 +610,12 @@ ovrvejs
 fork{
 	Ndef(\x,
 		\setsrc -> Pbind(
-			//\poem, Pseq([Pxrand((1..y.size-1), 2), 0], inf),
+			\poem, Pseq([Pxrand((1..y.size-1), 2), 0], inf),
 			//\poem, Pseq([Pxrand((1..y.size-1), 2), 49], inf),
 			//\poem, Pseq([50,49], inf), // nice syntetisk chill
 
 			//\poem, Pxrand([49,50,49,51,49,49], inf),
-			\poem, Pxrand([0,20], inf),
+			//\poem, Pxrand([0,20], inf),
 
 			// den sidste brugte i stability log --> \poem, Pseq([49,34,41,49,50,23,0,45,21,49,23,46,0], inf),
 
@@ -673,7 +676,8 @@ fork{
 				if(envir.poem > 0){
 					(2..20.0).choose;
 				}{
-					(2..5.0).choose;
+					2;
+					//(20..360.0).choose;
 				}
 			})
 		).flatten
@@ -684,11 +688,12 @@ fork{
 	Pdef(\CtrlVersion,
 		Pbind(
 			\degree, Rest(), // stop sending midi to generic piano
-			\version, 1,//Pbrown(0,1,1,inf),
+			\version, Pbrown(0,1,1,inf),
 			\versionSend, Pfunc({|envir|
 				~version = envir.version;
 			}),
-			\dur, Pbrown(0.1,2)
+			//\dur, Pbrown(0.1,2),
+			\dur, Pbrown(2,10)
 		).trace
 	).play(quant:0);
 

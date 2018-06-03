@@ -310,7 +310,17 @@ cont 20:23-20:53 OK
 21:32-23:21 OK
 23:21-23:58 OK no "lavine" BUT clicks on sound, maybe somthing to do with s.latency?
 
+
+------------y.at(rand), longer pause, with empty poem.
+10:17-14:51
+
+
+
+
+
+-----------insearch of clicks, norm its a mem thing
 -----------to do tjek stability of lastStableVersion with default server latency
+-----------to do tjek stability of lastStableVersion with qjacktl
 -----------what happens after 2-3 hours?
 
 
