@@ -385,9 +385,13 @@ l= 900;    //global window/buffer size in pixels/samples
 	};
 
 	w.front;
-	CmdPeriod.doOnce({if(w.isClosed.not, {w.close})});
+	CmdPeriod.doOnce({if(w.isClosed.not, {w.close; "\n\t\tcmd+. -> stopped\n\n".postln;})});
 	u.frameRate_(fps);
 	u.animate= true;
+
+	// NOTIFY
+	NotificationCenter.notify(\draw, \done);
+
 }.fork(AppClock, 0.0);
 
 OSCdef(\amp, {arg msg, time;

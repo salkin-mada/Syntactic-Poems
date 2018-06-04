@@ -22,7 +22,7 @@ cleaned up in LXDE-pi/xsessions.conf
 
 
 ```
-// notes
+// notes all poems her count +1
 
 approoveed,
 44

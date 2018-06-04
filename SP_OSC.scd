@@ -22,7 +22,7 @@ OSCdef(\ctrlTrails, {arg msg, time, addr, port;
 	NetAddr("127.0.0.1", 57120).sendMsg('/painter/trails', val);
 }, '/tr', argTemplate: [nil, 3]);
 
-OSCdef(\ctrlRed, {arg msg, time, addr, port;
+/*OSCdef(\ctrlRed, {arg msg, time, addr, port;
 	var val = msg[3];
 	//msg.postln;
 	NetAddr("127.0.0.1", 57120).sendMsg('/rgba/red', val);
@@ -44,4 +44,4 @@ OSCdef(\ctrlAlpha, {arg msg, time, addr, port;
 	var val = msg[3];
 	//msg.postln;
 	NetAddr("127.0.0.1", 57120).sendMsg('/rgba/alpha', val);
-}, '/tr', argTemplate: [nil, 7]);
+}, '/tr', argTemplate: [nil, 7]);*/

@@ -1,7 +1,10 @@
 fork{
 	Ndef(\x,
 		\setsrc -> Pbind(
-			\poem, Pseq([Pxrand((1..y.size-1), 2), 0], inf),
+			\poem, Pseq(
+				[1, Pxrand((2..y.size-1), 3), 1, 0, 50, Pxrand((2..y.size-1), 3), 50, 1, 0],
+				inf
+			),
 			//\poem, Pseq([Pxrand((1..y.size-1), 2), 49], inf),
 			//\poem, Pseq([50,49], inf), // nice syntetisk chill
 
@@ -34,42 +37,17 @@ fork{
 			Pfunc({|envir|
 				if(envir.poem > 0){
 					y.at(envir.poem).postcs;
-					/*~flag;
-					if(~flag == 1){
-						//~bufferForPen= BuffSendTrig.kr(Impulse.kr(24), 4, freq.at(0).linlin(20,1000,0.01,1.0); ); //reder.alloc(s, l, 2);
-						//s.sync; // okay to do sync while prog is running - maybe?
-						"/tfalse flag".postln;
-						~flag = 0;
-					};*/
-
-					/*if(envir.poem == 49){
-						//~ge.clear;
-						//~ge.free;
-						//s.sync; // needed?
-						//"g was cleared".postln;
-						y.at(envir.poem).postcs
-					}{
-						y.at(envir.poem).postcs
-					}*/
-					//"\t\tkån".postln;
-
 				}{
-					//"\t\tsil".postln;
+					"\n\t\INSIST NEGATIVE\n".postln;
 					y.at(0).postcs;
-					//~bufferForPen.clear;
-					//"cleared Pen Buffer".postln;
-					//"/ttrue flag".postln;
-					//~flag = 1;
 				}
 			}),
 			\dur,
 			Pfunc({|envir|
-				if(envir.poem > 0){
-					(2..20.0).choose;
-				}{
-					2;
-					//(20..360.0).choose;
-				}
+				case
+				{envir.poem > 1} {(10..40.0).choose}
+				{envir.poem == 1} {(60..120).choose}
+				{envir.poem == 0} {(20..120.0).choose;}
 			})
 		).flatten
 		.trace(\poem, prefix: "xpoem: ")
@@ -84,11 +62,11 @@ fork{
 				~version = envir.version;
 			}),
 			//\dur, Pbrown(0.1,2),
-			\dur, Pbrown(2,10)
+			\dur, Pbrown(1,3)
 		).trace
 	).play(quant:0);
 
-	1.0.wait; // correct order ensured
+	0.5.wait; // correct order ensured
 
 	Ndef(\protect, {var in, freq, hasFreq, lim, followAmp, followCrest, followZero, follow, sum;
 		in = In.ar(2,2);
@@ -117,7 +95,5 @@ fork{
 		sum;
 
 	}).play;
-
-
 
 }

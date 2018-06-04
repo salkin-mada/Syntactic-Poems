@@ -1,5 +1,6 @@
 y = List[
-	{/*Silence.ar*/},
+	{/*EMPTY*/},
+	{~de=Dust.kr(0.02)+Dust2.kr([0.05,0.04]);~re=PlayBuf.ar(2,~ge,TExpRand.kr(0.01,19,~de),~de,0,1)/4;FFT(~ge,~de+(~de*~re));~re.clip2(1).flatten},
 	{x=LPF18.ar(DPW4Saw.ar(LFNoise0.ar(3.1*Ndef(\x).ar)),10%Ndef(\x).ar,1.29);Limiter.ar(SinOsc.ar([x%2e2,x%3e2]/x),0.2).flatten},
 	{x=LPF18.ar(DPW4Saw.ar(Saw.ar(5e3*Ndef(\x).ar.abs)),5e-2*Ndef(\x).ar,0.1);Limiter.ar(SinOsc.ar([x%40,x%70*Ndef(\x).ar]/x),0.3).flatten},
 	{x=LPF18.ar(DPW4Saw.ar(Saw.ar(0.07*Ndef(\x).ar)),0.001*Ndef(\x).ar,0.9);Limiter.ar(SinOsc.ar([x+1e2,x+1e2]/x),0.2).flatten},
@@ -52,3 +53,15 @@ y = List[
 	{t=(1..5);f=t*9999*Pulse.ar(1);d=SinOsc.ar(1).range(0,3);e=t/10;k=SinGrain.ar(Dust.ar(e),d,f).sum;Squiz.ar(k!2,4,1,10)},
 	{t=(1..5);f=t*299*Pulse.ar(1);d=SinOsc.ar(1).range(0,3);e=t/10;k=SinGrain.ar(Dust.ar(e),d,f).sum;Squiz.ar(k!2,4,1,10)}
 ];
+
+
+
+
+
+
+
+
+
+
+
+//{/*~ge=LocalBuf(8192,2);*/~de=Dust.kr(0.2)+Dust2.kr([2,1]);~re=PlayBuf.ar(2,~ge,TExpRand.kr(0.01,19,~de),~de,0,1)/4;FFT(~ge,~de+(~de*~re));~re.clip2(1).flatten}
