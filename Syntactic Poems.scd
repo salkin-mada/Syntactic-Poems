@@ -1,37 +1,14 @@
-/*
-sudo nano /etc/lightdm/lightdm.conf
-in -> [Seat:*]
-# dont sleep the screen
-xserver-command=X -s 0 dpms
 
-nano ~/.config/lxsession/LXDE-pi/autostart
-# idle mouse curser when inactive
-@uncluter -display :0 -noevents -grab
-*/
-
-/*
-cleaned up in LXDE-pi/xsessions.conf
-~.config/lxsessions/LXDE-pi/autostart
-*/
-
-
-
-/*( // use this for raspi
-s.options.memSize_(8192*10);
+(
+// boot RPI serv
+s.options.memSize_(8192*30);
+s.latency= 0.05;
 s.boot;
 /*s.doWhenBooted{
 	("\n*** memSize; "++s.options.memSize).post;
 	s.recChannels_(2);
 	("\n~~~~~~~~~~~~~~~~~~~~~~~" ++ "\n*** Overwriting recChannels to: " ++ s.recChannels ++ "\n").post;
 }*/
-)*/
-
-
-
-(
-s.options.memSize_(8192*30);
-s.latency= 0.05;
-s.boot;
 )
 
 
@@ -587,21 +564,7 @@ y = List[
 ];
 
 
-/*
-approoveed,
-44
-33
-21 er nice
-24              -- undersøg de bløde ting der kommer frem
-23 er nice      -- den gør det...
-*/
 
-
-
-/*
-ovrvejs
-41 alarm alarm, okay?
-*/
 
 
 
