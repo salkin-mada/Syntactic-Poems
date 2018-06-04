@@ -1,20 +1,27 @@
 
+#### disable dpms
+```
 sudo nano /etc/lightdm/lightdm.conf
 in -> [Seat:*]
 # dont sleep the screen
 xserver-command=X -s 0 dpms
+```
 
+#### hide cursor
+```
 nano ~/.config/lxsession/LXDE-pi/autostart
-# idle mouse curser when inactive
+# idle mouse cursor when inactive
 @uncluter -display :0 -noevents -grab
+```
 
-
+##### clean
+```
 cleaned up in LXDE-pi/xsessions.conf
 ~.config/lxsessions/LXDE-pi/autostart
+```
 
 
-
-
+```
 // notes
 
 approoveed,
@@ -25,6 +32,6 @@ approoveed,
 23 ice          -- den gør det...
 
 
-
 ovrvejs
 41 alarm alarm, okay?
+```
