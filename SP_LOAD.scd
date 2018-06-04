@@ -1,8 +1,6 @@
-//"SP_BOOT".loadRelative // loadRelative not working windows, but on RPI?
 
-"X:/Supercollider SCD/Syntactic Poems/SP_BOOT.scd".load
-"X:/Supercollider SCD/Syntactic Poems/SP_DRAW.scd".load
-"X:/Supercollider SCD/Syntactic Poems/SP_LIST.scd".load
-"X:/Supercollider SCD/Syntactic Poems/SP_OSC.scd".load
-"X:/Supercollider SCD/Syntactic Poems/SP_SND.scd".load
-
+"SP_BOOT.scd".loadRelative
+"SP_DRAW.scd".loadRelative
+"SP_LIST.scd".loadRelative
+"SP_OSC.scd".loadRelative
+"SP_SND.scd".loadRelative
