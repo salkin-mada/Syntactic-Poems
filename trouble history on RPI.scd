@@ -312,7 +312,7 @@ cont 20:23-20:53 OK
 
 
 ------------y.at(rand), longer pause, with empty poem.
-10:17-14:51
+10:17-14:51 -> manual abort -> ALL OK
 
 
 
