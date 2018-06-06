@@ -26,9 +26,17 @@ fork{
 )
 
 
-
+// raspi paths
 Document.open("/home/pi/Documents/SuperCollider/Syntactic-Poems/SP_BOOT.scd")
 Document.open("/home/pi/Documents/SuperCollider/Syntactic-Poems/SP_DRAW.scd")
 Document.open("/home/pi/Documents/SuperCollider/Syntactic-Poems/SP_LIST.scd")
 Document.open("/home/pi/Documents/SuperCollider/Syntactic-Poems/SP_OSC.scd")
 Document.open("/home/pi/Documents/SuperCollider/Syntactic-Poems/SP_SND.scd")
+
+"SP_LIST.scd"
+// laptop paths
+Document.open("C:/Users/na/Desktop/Supercollider SCD/Syntactic-Poems/SP_BOOT.scd")
+Document.open("C:/Users/na/Desktop/Supercollider SCD/Syntactic-Poems/SP_DRAW.scd")
+Document.open("C:/Users/na/Desktop/Supercollider SCD/Syntactic-Poems/SP_LIST.scd")
+Document.open("C:/Users/na/Desktop/Supercollider SCD/Syntactic-Poems/SP_OSC.scd")
+Document.open("C:/Users/na/Desktop/Supercollider SCD/Syntactic-Poems/SP_SND.scd")

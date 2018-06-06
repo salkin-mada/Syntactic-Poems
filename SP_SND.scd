@@ -3,7 +3,7 @@ fork{
 		\setsrc -> Pbind(
 			\poem, Pseq(
 				[
-					50,51,50
+					Pxrand((2..y.size-1), inf)
 					/*1,
 					Pxrand((2..y.size-1), 3),
 					1,
@@ -68,13 +68,13 @@ fork{
 	Pdef(\CtrlVersion,
 		Pbind(
 			\degree, Rest(), // stop sending midi to generic piano
-			\version, Pbrown(0,1,1,inf),
+			\version, Prand((0..10), inf), //Pbrown(0,5,1,inf),
 			\versionSend, Pfunc({|envir|
 				~version = envir.version;
 			}),
 			//\dur, Pbrown(0.1,2),
-			\dur, Pbrown(1,3)
-		).trace
+			\dur, Pbrown(0.1,1)
+		)/*.trace*/
 	).play(quant:0);
 
 	0.5.wait; // correct order ensured

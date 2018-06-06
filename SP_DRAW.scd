@@ -47,7 +47,7 @@ l= 512;    //global window/buffer size in pixels/samples
 		});
 
 		Pen.fillColor= Color.red(0, ~trails);
-		Pen.fillRect(u.bounds);			//manually clear
+		Pen.fillRect(u.bounds);			//clear
 		Pen.strokeColor= Color.new(~red, ~green, ~blue, ~alpha);
 
 		switch(~version,
@@ -90,7 +90,7 @@ l= 512;    //global window/buffer size in pixels/samples
 				Pen.stroke;
 			},
 			1, {									//praw it rev
-								var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
+				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
 				var windowLength = 3;
 				var times= 6;
 				Pen.fillColor= Color.white;
@@ -129,64 +129,208 @@ l= 512;    //global window/buffer size in pixels/samples
 				Pen.stroke;
 				//Pen.fill;
 			},
-			2, {									//flower
+			2, {									//mesk
+
+
+				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
+				var windowLength = 2;
+				var times= 3;
+				Pen.fillColor= Color.white;
+				rule= (0..256).choose;
+				krt = krt+~flip/~amp*0.7;
+				pat= 0.dup((width/cellWidth).round);
+				pat.put((pat.size/2).round, 1);
+				dict= ();
+				times.do{|i| dict.put(i.asBinaryDigits(windowLength).join.asSymbol, rule.asBinaryDigits[(times-1)-i])};
+
+				/* -> render */
+				while({yrt*cellHeight<height}, {
+					pat.do{|c, x|
+						if(c==1, {
+							Pen.addRect(
+								Rect(
+									(~amp*x*cellWidth)+x*(cellWidth*1.18)*~amp*~flip/~trails.linlin(0,200,1,4)+30,
+									(~amp*x*cellWidth)+yrt*(cellHeight*3)*~amp*~flip,
+									cellWidth/~amp*2.2,
+									cellHeight/~flip*1.1));
+						});
+					};
+					pat= [0]++pat.slide(windowLength, 1).clump(windowLength).collect{|c|
+						dict.at(c.join.asSymbol);
+					}++[0];
+					yrt= yrt+krt;
+				});
+
 				Pen.translate(w2, h2);
 				Pen.moveTo(Point(arr[0], 0)*arr[0]);
 				arr.do{|y, x|
 
-					var p= Point(y, x)*y;
+					var p= Point(yrt, x);
 					var a= x%width/width*2pi+theta;
 					Pen.lineTo(p.rotate(a));
 				};
 				Pen.stroke;
 			},
-			3, {									//experimental
-				Pen.rotate(theta, w2, h2);
+			3, {									//mesk 2
+
+				var pat, dict, rule, ruleRand, krt= 1, yrt= 2;
+				var windowLength = 4;
+				var times= 4;
+				Pen.fillColor= Color.blue;
+				rule= (0..256).choose;
+				krt = krt+~flip/~amp*0.3;
+				pat= 0.dup((width/cellWidth).round);
+				pat.put((pat.size/2).round, 1);
+				dict= ();
+				times.do{|i| dict.put(i.asBinaryDigits(windowLength).join.asSymbol, rule.asBinaryDigits[(times-1)-i])};
+
+				/* -> render */
+				while({yrt*cellHeight<height}, {
+					pat.do{|c, x|
+						if(c==1, {
+							Pen.addRect(
+								Rect(
+									(~amp*x*cellWidth)+x*(cellWidth*1.18)*~amp*~flip/~trails.linlin(0,200,1,4)+13,
+									(~amp*x*cellWidth)+yrt*(cellHeight*3)*~amp*~flip,
+									cellWidth/~amp*2.4,
+									cellHeight/~flip*0.4));
+						});
+					};
+					pat= [0]++pat.slide(windowLength, 1).clump(windowLength).collect{|c|
+						dict.at(c.join.asSymbol);
+					}++[0];
+					yrt= yrt+krt;
+				});
+
 				Pen.translate(w2, h2);
+				Pen.moveTo(Point(arr[0], 0)*arr[0]);
 				arr.do{|y, x|
-					var p= Point(x*~amp, y*~amp).rotate(y*2pi);
-					var a= x%width/width*1pi;
+
+					var p= Point(yrt, x);
+					var a= x%width/width*2pi+theta/yrt;
+					Pen.lineTo(p.rotate(a*yrt));
+				};
+				Pen.fill;
+			},
+			4, {									//experimental
+
+				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
+				var windowLength = 3;//(~speed*8).asInt;
+				var times= 6;
+				Pen.fillColor= Color.red;
+				//rule= 256.rand.postln;
+				rule= (~flip/~amp*256).asInt;
+				krt = krt+~flip/~amp*0.3;
+				pat= 0.dup((width/cellWidth).round);
+				pat.put((pat.size/2).round, 1);
+				dict= ();
+				times.do{|i| dict.put(i.asBinaryDigits(windowLength).join.asSymbol, rule.asBinaryDigits[(times-1)-i])};
+
+				//--render
+				while({yrt*cellHeight<height}, {
+					pat.do{|c, x|
+						if(c==1, {
+							Pen.addRect(Rect(x*cellWidth, yrt*cellHeight, cellWidth/~amp, cellHeight/~flip));
+						});
+					};
+					pat= [0]++pat.slide(windowLength, 1).clump(windowLength).collect{|c|
+						dict.at(c.join.asSymbol);/*Pen.rotate(theta*~amp, w2, h2);
+				Pen.translate(0, 20);
+				arr.do{|y, x|
+					var p= Point(x, y*(height*~amp));
+					if(x==0, {Pen.moveTo(p)}, {Pen.lineTo(p/yrt)});
+				};*/
+					}++[0];
+					yrt= yrt+krt;
+				});
+				Pen.fill;
+
+
+				/*Pen.fillColor= Color.new(0.8, 0.2, 0.1, 1);
+				Pen.rotate(theta, w2, h2);
+				Pen.translate(100, 100);
+				arr.do{|y, x|
+					//var p= Point(x*~amp.linlin(0.0,1.0, 0.5,1.0), y*~amp.linlin(0.0,1.0, 0.5,1.0)).rotate(y*2pi/~trails);
+					var p= Point((x/5)*~amp.linlin(0.0,1.0, 0.5,1.0), (y/5)*~amp.linlin(0.0,1.0, 0.5,1.0)).rotate(y*2pi/~trails);
+					var a= x%width/width*0.5pi;
 					var i= ~speed*~amp;
 					var u= 0.1;
 					if(x==0,
 						{
 							Pen.rotate(i, u, 0);
-
 							Pen.moveTo(p)
 						},
 						{
-							Pen.translate(i,0);
-							//Pen.rotate(0, 0, 130*~speed);
+							Pen.translate(i*0.2,i*~flip);
+							Pen.rotate(2pi*~amp, 0, 120*~speed);
 							Pen.lineTo(p.rotate(a))
 						}
 					);
 				};
-				Pen.stroke;
+				Pen.fill;*/
 			},
-			4, {									//new search
+			5, {									//new search
+
+
+				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
+				var windowLength = 3;
+				var times= 6;
+				Pen.fillColor= Color.blue;
+				rule= (~amp*256).asInt;
+				krt = krt+~flip/~amp*0.1;
+				pat= 0.dup((width/cellWidth).round);
+				pat.put((pat.size/2).round, 1);
+				dict= ();
+				times.do{|i| dict.put(i.asBinaryDigits(windowLength).join.asSymbol, rule.asBinaryDigits[(times-1)-i])};
+
+				/* -> render */
+				while({yrt*cellHeight<height}, {
+					pat.do{|c, x|
+						if(c==1, {
+							Pen.addRect(
+								Rect(
+									(~amp*x*cellWidth)+x*(cellWidth*1.1)*~amp*~flip/~trails.linlin(0,200,1,8),
+									(~amp*x*cellWidth)+yrt*(cellHeight*5)*~amp*~flip,
+									cellWidth/~amp*2,
+									cellHeight/~flip*2));
+						});
+					};
+					pat= [0]++pat.slide(windowLength, 1).clump(windowLength).collect{|c|
+						dict.at(c.join.asSymbol);
+					}++[0];
+					yrt= yrt+krt;
+				});
+				//provoke
+				/*Pen.rotate(theta*~amp, w2, h2);
+				Pen.translate(0, 20);
+				arr.do{|y, x|
+					var p= Point(x, y*(height*~amp));
+					if(x==0, {Pen.moveTo(p)}, {Pen.lineTo(p/yrt)});
+				};*/
+				Pen.stroke;
+				/*Pen.fillColor= Color.blue;
 				Pen.rotate(theta, w2, h2);
 				Pen.translate(w2, h2);
 				arr.do{|y, x|
-					var p= Point(x*~amp, y*~amp).rotate(y*12pi);
-					var a= x%width/width*1pi;
+					var p= Point(120*~amp.linlin(0.0,1.0,0.5,1.0), 120*~amp.linlin(0.0,1.0,0.5,1.0)).rotate(y*12pi);
+					var a= x%width/width*5pi;
 					var i= ~speed*~amp/2;
 					var u= 0.1;
 					if(x==0,
 						{
-							//Pen.rotate(i, u, 0);
-
-							Pen.moveTo(p)
+							//Pen.moveTo(p)
 						},
 						{
-							Pen.translate(i.linlin(0.0,1.0,0.0,0.001)/*range(0,0.001)--fail på linux*/,0);
-							//Pen.rotate(0, 0, 130*~speed);
-							Pen.lineTo(p.rotate(a))
+							//Pen.translate(i.linlin(0.0,1.0,200,500)*~amp, i.linlin(0.0,1.0,200,500)*~flip);
+							//Pen.rotate(2pi*i, i, ~flip);
+							//Pen.lineTo(p.rotate(a))
+							Pen.lineTo(p);
 						}
 					);
 				};
-				Pen.stroke;
+				Pen.fill;*/
 			},
-			5, {
+			6, {
 				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
 				var windowLength = 3;//(~speed*8).asInt;
 				var times= 6;
@@ -219,7 +363,7 @@ l= 512;    //global window/buffer size in pixels/samples
 				Pen.fill;
 				//Pen.stroke;
 			},
-			6, {
+			7, {
 				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
 				var windowLength = 3;//(~speed*8).asInt;
 				var times= 6;
@@ -252,7 +396,7 @@ l= 512;    //global window/buffer size in pixels/samples
 				Pen.fill;
 				//Pen.stroke;
 			},
-			7, {
+			8, {
 				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
 				var windowLength = 3;//(~speed*8).asInt;
 				var times= 6;
@@ -290,7 +434,7 @@ l= 512;    //global window/buffer size in pixels/samples
 				Pen.fill;
 				//Pen.stroke;
 			},
-			8, {
+			9, {
 
 				/*
 				   first "even" spread version attempt.
@@ -329,7 +473,7 @@ l= 512;    //global window/buffer size in pixels/samples
 				Pen.fill;
 				//Pen.stroke;
 			},
-			9, {
+			10, {
 
 				/*
 				   first further attempt.
