@@ -2,7 +2,18 @@ fork{
 	Ndef(\x,
 		\setsrc -> Pbind(
 			\poem, Pseq(
-				[1, Pxrand((2..y.size-1), 3), 1, 0, 50, Pxrand((2..y.size-1), 3), 50, 1, 0],
+				[
+					50,51,50
+					/*1,
+					Pxrand((2..y.size-1), 3),
+					1,
+					0,
+					50,
+					Pxrand((2..y.size-1), 3),
+					50,
+					1,
+					0*/
+				],
 				inf
 			),
 			//\poem, Pseq([Pxrand((1..y.size-1), 2), 49], inf),

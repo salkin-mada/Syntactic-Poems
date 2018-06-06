@@ -1,4 +1,5 @@
-l= 900;    //global window/buffer size in pixels/samples
+// BARCO COMPSITE SCREEN 512X656
+l= 512;    //global window/buffer size in pixels/samples
 {
 	//--variables
 	var theta= 0;
@@ -7,7 +8,7 @@ l= 900;    //global window/buffer size in pixels/samples
 	var cnt= 0;
 
 	//--window setup
-	var width= l/**1.60*/, height= l;
+	var width= (l*1.28).ceil, height= l;
 	var w= Window("gendar_theta", Rect(0, 0, width, height), true);
 	var u= UserView(w, Rect(0, 0, width/**2*/, height));
 	var w2= width*0.5;
