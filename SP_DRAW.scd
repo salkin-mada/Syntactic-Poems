@@ -19,7 +19,7 @@ l= 512;    //global window/buffer size in pixels/samples
 	~bufferForPen= Buffer.alloc(s, l, 2);
 	s.sync;
 
-	// for poem 49
+	// for poems
 	~ge= Buffer.alloc(s, 8192, 2);
 	s.sync;
 
