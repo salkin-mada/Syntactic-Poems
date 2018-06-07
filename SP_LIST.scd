@@ -51,17 +51,11 @@ y = List[
 	{SinOsc.ar([420,430],0,0.8)},
 	{/*~ge=LocalBuf(8192,2);*/~de=Dust.kr(0.2)+Dust2.kr([2,1]);~re=PlayBuf.ar(2,~ge,TExpRand.kr(0.01,19,~de),~de,0,1)/4;FFT(~ge,~de+(~de*~re));~re.clip2(1).flatten},
 	{t=(1..5);f=t*9999*Pulse.ar(1);d=SinOsc.ar(1).range(0,3);e=t/10;k=SinGrain.ar(Dust.ar(e),d,f).sum;Squiz.ar(k!2,4,1,10)},
-	{t=(1..5);f=t*299*Pulse.ar(1);d=SinOsc.ar(1).range(0,3);e=t/10;k=SinGrain.ar(Dust.ar(e),d,f).sum;Squiz.ar(k!2,4,1,10)}
+	{t=(1..5);f=t*299*Pulse.ar(1);d=SinOsc.ar(1).range(0,3);e=t/10;k=SinGrain.ar(Dust.ar(e),d,f).sum;Squiz.ar(k!2,4,1,10)},
+	{f=LFNoise0.kr(0.2).range(1,50);d=SinOsc.ar(f)*LFNoise0.kr(2);r=PlayBuf.ar(2,~req,SinOsc.kr(d),Dust.kr(0.3)+Dust2.kr(0.2),0,1);FFT(~req,d);LeakDC.ar(r.clip2(0.6));},
+	{f=LFNoise0.kr(3.2).range(40,50);d=SinOsc.ar(f)*LFNoise0.kr(2)*SinOsc.ar(10)*Saw.ar(2);r=PlayBuf.ar(2,~req,Saw.kr(d),Dust.kr(0.2)+Dust2.kr(0.1),0,1);FFT(~req,d+f);CompanderD.ar(r, 0.2, 0.1);LeakDC.ar(r.clip2(0.4));},
+	{f=LFNoise0.kr(40.2).range(1,5);d=SinOsc.ar(f)*LFNoise0.kr(0.1);r=PlayBuf.ar(2,~req,SinOsc.kr((d/f)*d),Dust.kr(0.3)+Dust2.kr(0.2),0,1);FFT(~req,d);LeakDC.ar(r.clip2(0.6));},
+	{f=LFNoise0.kr(40.2).range(1,50);d=SinOsc.ar(f)*LFNoise0.kr(0.1);r=PlayBuf.ar(2,~req,SinOsc.kr((d/f)*d),Dust.kr(0.3)+Dust2.kr(0.2),0,1);FFT(~req,d);LeakDC.ar(r.clip2(0.6));},
+	{f=LFNoise0.kr(10.2).range(1,55.rand+10);r=PlayBuf.ar(2,~req,LFNoise0.kr(f),Dust.kr(0.3)+Dust2.kr(0.2),0,1);FFT(~req,d);LeakDC.ar(r.clip2(0.6));}
+
 ];
-
-
-
-
-
-
-
-
-
-
-
-//{/*~ge=LocalBuf(8192,2);*/~de=Dust.kr(0.2)+Dust2.kr([2,1]);~re=PlayBuf.ar(2,~ge,TExpRand.kr(0.01,19,~de),~de,0,1)/4;FFT(~ge,~de+(~de*~re));~re.clip2(1).flatten}
