@@ -3,16 +3,19 @@ fork{
 		\setsrc -> Pbind(
 			\poem, Pseq(
 				[
-					Pxrand((2..y.size-1), inf)
-					/*1,
+					1,
+					1,
+					50,
 					Pxrand((2..y.size-1), 3),
+					1,
 					1,
 					0,
 					50,
 					Pxrand((2..y.size-1), 3),
 					50,
 					1,
-					0*/
+					0,
+					1
 				],
 				inf
 			),
@@ -55,10 +58,10 @@ fork{
 			}),
 			\dur,
 			Pfunc({|envir|
-				case
-				{envir.poem > 1} {(10..40.0).choose}
-				{envir.poem == 1} {(60..120).choose}
-				{envir.poem == 0} {(20..120.0).choose;}
+			case
+			{envir.poem > 1} {(10..40.0).choose}
+			{envir.poem == 1} {(60..120).choose}
+			{envir.poem == 0} {(20..40.0).choose;}
 			})
 		).flatten
 		.trace(\poem, prefix: "xpoem: ")
@@ -68,12 +71,17 @@ fork{
 	Pdef(\CtrlVersion,
 		Pbind(
 			\degree, Rest(), // stop sending midi to generic piano
-			\version, Prand((0..10), inf), //Pbrown(0,5,1,inf),
+			\version, Pseq(
+				[
+					Prand((0..2), 60),
+					Prand((3..10), 5)
+				],
+				inf
+			),
 			\versionSend, Pfunc({|envir|
 				~version = envir.version;
 			}),
-			//\dur, Pbrown(0.1,2),
-			\dur, Pbrown(0.1,1)
+			\dur, Pbrown(0.1,2)
 		)/*.trace*/
 	).play(quant:0);
 

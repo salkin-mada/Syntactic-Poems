@@ -55,7 +55,7 @@ l= 512;    //global window/buffer size in pixels/samples
 				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
 				var windowLength = 3;
 				var times= 6;
-				Pen.fillColor= Color.white;
+				Pen.strokeColor= Color.new(0.3,0.8,0.4);
 				rule= (~trails/~amp*256).asInt;
 				krt = krt+~flip/~amp*0.3;
 				pat= 0.dup((width/cellWidth).round);
@@ -93,7 +93,7 @@ l= 512;    //global window/buffer size in pixels/samples
 				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
 				var windowLength = 3;
 				var times= 6;
-				Pen.fillColor= Color.white;
+				Pen.strokeColor = Color(0.3,0.8,0.6);
 				rule= (0..256).choose;
 				krt = krt+~flip/~amp*0.3;
 				pat= 0.dup((width/cellWidth).round);
@@ -135,7 +135,7 @@ l= 512;    //global window/buffer size in pixels/samples
 				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
 				var windowLength = 2;
 				var times= 3;
-				Pen.fillColor= Color.white;
+				Pen.strokeColor = Color(0.2,0.4,0.8);
 				rule= (0..256).choose;
 				krt = krt+~flip/~amp*0.7;
 				pat= 0.dup((width/cellWidth).round);
@@ -176,7 +176,7 @@ l= 512;    //global window/buffer size in pixels/samples
 				var pat, dict, rule, ruleRand, krt= 1, yrt= 2;
 				var windowLength = 4;
 				var times= 4;
-				Pen.fillColor= Color.blue;
+				Pen.fillColor= Color(0.06,0.87,0.78);
 				rule= (0..256).choose;
 				krt = krt+~flip/~amp*0.3;
 				pat= 0.dup((width/cellWidth).round);
@@ -217,7 +217,7 @@ l= 512;    //global window/buffer size in pixels/samples
 				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
 				var windowLength = 3;//(~speed*8).asInt;
 				var times= 6;
-				Pen.fillColor= Color.red;
+				Pen.fillColor= Color.white;
 				//rule= 256.rand.postln;
 				rule= (~flip/~amp*256).asInt;
 				krt = krt+~flip/~amp*0.3;
@@ -275,7 +275,7 @@ l= 512;    //global window/buffer size in pixels/samples
 				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
 				var windowLength = 3;
 				var times= 6;
-				Pen.fillColor= Color.blue;
+				Pen.strokeColor = Color(0.35,0.7,0.89);
 				rule= (~amp*256).asInt;
 				krt = krt+~flip/~amp*0.1;
 				pat= 0.dup((width/cellWidth).round);
@@ -334,9 +334,9 @@ l= 512;    //global window/buffer size in pixels/samples
 				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
 				var windowLength = 3;//(~speed*8).asInt;
 				var times= 6;
-				Pen.fillColor= Color.red;
-				//rule= 256.rand.postln;
-				rule= (~trails/~amp*256).asInt;
+				Pen.fillColor= Color(0.1,0.9,0.87);
+				rule= 256.rand;
+				//rule= (~trails/~amp*256).asInt;
 				krt = krt+~flip/~amp*0.6;
 				pat= 0.dup((width/cellWidth).round);
 				pat.put((pat.size/2).round, 1);
@@ -367,7 +367,7 @@ l= 512;    //global window/buffer size in pixels/samples
 				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
 				var windowLength = 3;//(~speed*8).asInt;
 				var times= 6;
-				Pen.fillColor= Color.white;
+				Pen.fillColor= Color(0.4,0.99,0.67);
 				//rule= 256.rand.postln;
 				rule= (~trails/~amp*256).asInt;
 				krt = krt+~flip/~amp*0.6;
@@ -400,7 +400,7 @@ l= 512;    //global window/buffer size in pixels/samples
 				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
 				var windowLength = 3;//(~speed*8).asInt;
 				var times= 6;
-				Pen.fillColor= Color.white;
+				Pen.fillColor= Color(0.4,0.8,0.82);
 				//rule= 256.rand.postln;
 				rule= (~trails/~amp*256).asInt;
 				krt = krt+~flip/~amp*0.6;
@@ -443,7 +443,7 @@ l= 512;    //global window/buffer size in pixels/samples
 				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
 				var windowLength = 3;//(~speed*8).asInt;
 				var times= 6;
-				Pen.fillColor= Color.white;
+				Pen.fillColor= Color(0.1,0.82,0.53);
 				//rule= 256.rand.postln;
 				rule= (~trails/~amp*256).asInt;
 				krt = krt+~flip/~amp*0.6;
@@ -482,7 +482,8 @@ l= 512;    //global window/buffer size in pixels/samples
 				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
 				var windowLength = 3;//(~speed*8).asInt;
 				var times= 6;
-				Pen.fillColor= Color(0.5,0.5,~blue,1);
+				Pen.fillColor= Color(0.2,0.44,0.55);
+				//Pen.fillColor= Color(0.5,0.5,~blue,1);
 				//rule= 256.rand.postln;/*Pen.rotate(theta*~amp, w2, h2);
 				rule= (~trails/~amp*256).asInt;
 				krt = krt+~flip/~amp*0.6;
