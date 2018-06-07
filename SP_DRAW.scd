@@ -136,7 +136,7 @@ l= 512;    //global window/buffer size in pixels/samples
 				var pat, dict, rule, ruleRand, krt= 1, yrt= 7;
 				var windowLength = 2;
 				var times= 3;
-				Pen.strokeColor = Color(0.2,0.4,0.8);
+				Pen.strokeColor = Color.white;//Color(0.2,0.4,0.8);
 				rule= (0..256).choose;
 				krt = krt+~flip/~amp*0.7;
 				pat= 0.dup((width/cellWidth).round);

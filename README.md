@@ -51,7 +51,7 @@ cleaned up in LXDE-pi/xsessions.conf
 25 NOP
 26 NOP
 27 OK
-28 OK
+28 NOP
 29 OK
 30 NOP
 31 OK
@@ -80,4 +80,9 @@ cleaned up in LXDE-pi/xsessions.conf
 54 OK
 55 OK
 56 OK
+57 OK
+58 OK
+59 OK
+60 OK
+61 OK
 ```

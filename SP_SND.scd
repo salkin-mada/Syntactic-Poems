@@ -3,51 +3,24 @@ fork{
 		\setsrc -> Pbind(
 			\poem, Pseq(
 				[
-					51,52
-					/*1,
 					1,
-					50,
+					1,
+					28,
 					Pxrand((2..y.size-1), 3),
 					1,
 					1,
 					0,
-					50,
-					Pxrand((2..y.size-1), 3),
-					50,
+					28,
+					Pxrand((2..y.size-1), 2),
+					29,
 					1,
 					0,
-					1*/
+					1,
+					30,
+					Pxrand((2..y.size-1), 2),
 				],
 				inf
 			),
-			//\poem, Pseq([Pxrand((1..y.size-1), 2), 49], inf),
-			//\poem, Pseq([50,49], inf), // nice syntetisk chill
-
-			//\poem, Pxrand([49,50,49,51,49,49], inf),
-			//\poem, Pxrand([0,20], inf),
-
-			// den sidste brugte i stability log --> \poem, Pseq([49,34,41,49,50,23,0,45,21,49,23,46,0], inf),
-
-			/*Pfunc({|envir|
-			var chosen, flag = false, count = 0;
-			//flag.postln;
-			if(flag==false){
-			flag=true;
-			chosen = (1..y.size-1).choose;
-			};
-
-			//chosen.postln;
-
-			/*
-			if(count>=7){
-			chosen;
-			count+1;
-			}{
-			count = 0;
-			flag=false;
-			};*/
-			//chosen;
-			}),*/
 			\source,
 			Pfunc({|envir|
 				if(envir.poem > 0){
