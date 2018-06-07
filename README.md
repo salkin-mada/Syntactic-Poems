@@ -23,7 +23,6 @@ cleaned up in LXDE-pi/xsessions.conf
 
 ##### selection
 ```
-// notes all poems her count +1
 1 OK
 2 NOP
 3 OK
@@ -81,8 +80,4 @@ cleaned up in LXDE-pi/xsessions.conf
 55 OK
 56 OK
 57 OK
-58 OK
-59 OK
-60 OK
-61 OK
 ```
