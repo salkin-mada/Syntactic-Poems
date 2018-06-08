@@ -3,6 +3,8 @@ fork{
 		\setsrc -> Pbind(
 			\poem, Pseq(
 				[
+					36,
+					35,
 					1,
 					1,
 					28,
@@ -12,12 +14,12 @@ fork{
 					0,
 					28,
 					Pxrand((2..y.size-1), 2),
-					29,
+					35,
 					1,
-					0,
 					1,
-					30,
-					Pxrand((2..y.size-1), 2),
+					1,
+					35,
+					Pxrand((2..y.size-1), 2)
 				],
 				inf
 			),

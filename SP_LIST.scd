@@ -50,11 +50,21 @@ y = List[
 	{x=LPFVS6.ar(SinGrain.ar(Impulse.ar(10),0.1,DPW4Saw.ar(SinGrain.ar(Impulse.ar(30), 0.1, Ndef(\x).ar.abs*50))),Ndef(\x).ar.range(2000,30),Ndef(\x).ar.abs);Limiter.ar(DPW4Saw.ar([x%Ndef(\x).ar.range(200,x.abs),x%Ndef(\x).ar.range(701,x.abs)]),0.3).flatten},
 //	{SinOsc.ar([420,430],0,0.8)},
 	{/*~ge=LocalBuf(8192,2);*/~de=Dust.kr(0.2)+Dust2.kr([2,1]);~re=PlayBuf.ar(2,~ge,TExpRand.kr(0.01,19,~de),~de,0,1)/4;FFT(~ge,~de+(~de*~re));~re.clip2(1).flatten},
-	{t=(1..5);f=t*9999*Pulse.ar(1);d=SinOsc.ar(1).range(0,3);e=t/10;k=SinGrain.ar(Dust.ar(e),d,f).sum;Squiz.ar(k!2,4,1,10)},
-	{t=(1..5);f=t*299*Pulse.ar(1);d=SinOsc.ar(1).range(0,3);e=t/10;k=SinGrain.ar(Dust.ar(e),d,f).sum;Squiz.ar(k!2,4,1,10)},
+	{t=(1..5);f=t*9999*Pulse.ar(1);d=SinOsc.ar(1).range(0,3);e=t/10;k=SinGrain.ar(Dust.ar(e),d,f);Splay.ar(Squiz.ar(k!2,4,1,10),LFNoise0.kr(1).range(0,1).lag(0.4)).flatten},
+	{t=(1..5);f=t*299*Pulse.ar(1);d=SinOsc.ar(1).range(0,3);e=t/10;k=SinGrain.ar(Dust.ar(e),d,f);Splay.ar(Squiz.ar(k!2,4,1,10),LFNoise0.kr(1).range(0,1).lag(0.4)).flatten},
 	{f=LFNoise0.kr(0.2).range(1,50);d=SinOsc.ar(f)*LFNoise0.kr(2);r=PlayBuf.ar(2,~req,SinOsc.kr(d),Dust.kr(0.3)+Dust2.kr(0.2),0,1);FFT(~req,d);LeakDC.ar(r.clip2(0.6));},
 	{f=LFNoise0.kr(3.2).range(40,50);d=SinOsc.ar(f)*LFNoise0.kr(2)*SinOsc.ar(10)*Saw.ar(2);r=PlayBuf.ar(2,~req,Saw.kr(d),Dust.kr(0.2)+Dust2.kr(0.1),0,1);FFT(~req,d+f);CompanderD.ar(r, 0.2, 0.1);LeakDC.ar(r.clip2(0.4));},
 	{f=LFNoise0.kr(40.2).range(1,5);d=SinOsc.ar(f)*LFNoise0.kr(0.1);r=PlayBuf.ar(2,~req,SinOsc.kr((d/f)*d),Dust.kr(0.3)+Dust2.kr(0.2),0,1);FFT(~req,d);LeakDC.ar(r.clip2(0.6));},
 	{f=LFNoise0.kr(40.2).range(1,50);d=SinOsc.ar(f)*LFNoise0.kr(0.1);r=PlayBuf.ar(2,~req,SinOsc.kr((d/f)*d),Dust.kr(0.3)+Dust2.kr(0.2),0,1);FFT(~req,d);LeakDC.ar(r.clip2(0.6));},
-	{f=LFNoise0.kr(10.2).range(1,55.rand+10);r=PlayBuf.ar(2,~req,LFNoise0.kr(f),Dust.kr(0.3)+Dust2.kr(0.2),0,1);FFT(~req,d);LeakDC.ar(r.clip2(0.6));}
+	{f=LFNoise0.kr(10.2).range(1,55.rand+10);r=PlayBuf.ar(2,~req,LFNoise0.kr(f),Dust.kr(0.3)+Dust2.kr(0.2),0,1);FFT(~req,d);LeakDC.ar(r.clip2(0.6));},
+	{f=[1e4,2e4,3e4,4e4,5e4]*Pulse.ar(0.5);l=SinOsc.ar(2).range(0,10);d=[0.5,0.1,0.2,0.3,0.4];
+s=Splay.ar(SinGrain.ar(Dust.ar(d),l,f),LFNoise0.kr(1).range(0,1).lag(0.4));Squiz.ar(s,4,1,10);},
+	{f=[1e4,2e4,3e4,4e4,5e4]*Pulse.ar(0.5);l=SinOsc.ar(2).range(0,8);d=[0.5,0.1,0.2,0.3,0.4];
+s=Splay.ar(SinGrain.ar(Dust.ar(d),l,f),LFNoise0.kr(1).range(0,1).lag(0.4));Squiz.ar(s,4,1,10);},
+	{f=[1e3,2e3,3e3,4e3,5e3]*Pulse.ar(0.5);l=SinOsc.ar(2).range(0,8);d=[0.5,0.1,0.2,0.3,0.4];
+s=Splay.ar(SinGrain.ar(Dust.ar(d),l,f),LFNoise0.kr(1).range(0,1).lag(0.4));Squiz.ar(s,4,1,10);},
+	{f=[1e3,2e3,3e3,4e3,5e3]*Pulse.ar(0.3);l=SinOsc.ar(1.6).range(0,8);d=[0.5,0.1,0.2,0.3,0.4];
+s=Splay.ar(SinGrain.ar(Dust.ar(d),l,f),LFNoise0.kr(1).range(0,1).lag(0.4));Squiz.ar(s,4,1,10);},
+	{f=[1e4,2e4,3e4,4e4,5e4]*Pulse.ar(0.23);l=SinOsc.ar(1.3).range(0,8);d=[0.5,0.1,0.2,0.3,0.4];
+s=Splay.ar(SinGrain.ar(Dust.ar(d),l,f),LFNoise0.kr(0.7).range(0,1).lag(0.3));Squiz.ar(s,4,1,10);}
 ];
