@@ -21,8 +21,9 @@ cleaned up in LXDE-pi/xsessions.conf
 ```
 
 ##### composite
-```
+
 enable PAL in /boot/config.txt
+```
 sdtv_mode
 0 = Normal NTSC
 1 = Japanese version of NTSC – no pedestal
@@ -33,18 +34,19 @@ sdtv_aspect
 1 = 4:3
 2 = 14:9
 3 = 16:9
-
-sdtv_disable_colourburst
+```
+###### sdtv_disable_colourburst
 Setting ```sdtv_disable_colourburst``` to ```1``` disables colourburst on composite video output. The picture will be displayed in monochrome, but it may appear sharper.
-```
 
-##### composite TRRS cable
+
+##### composite TRRS cable connection logic
 ```
+FINDINGS,
+
 normal working aka "correct"
 |       |           |           |         >
 redcenter  gnd all      yellowcenter  whitecenter
-*RED is composite out.. not yellow
-
+*RED is composite out..
 
 interesting crazy behavior
 |       |           |           |         >
