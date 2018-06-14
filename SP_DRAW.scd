@@ -1,13 +1,13 @@
 // BARCO COMPSITE SCREEN 512X656
-l= 512;    //global window/buffer size in pixels/samples
+l= 512;  /*global size*/
 {
-	//--variables
+	/*vars*/
+	var cnt= 0;
 	var theta= 0;
 	var fps= 20;
 	var arr= Array.fill(l, 0);
-	var cnt= 0;
 
-	//--window setup
+	/*setup*/
 	var width= (l*1.28).ceil, height= l;
 	var w= Window("gendar_theta", Rect(0, 0, width, height), true);
 	var u= UserView(w, Rect(0, 0, width/**2*/, height));
@@ -15,16 +15,16 @@ l= 512;    //global window/buffer size in pixels/samples
 	var h2= height*0.5;
 	var cellWidth= 10, cellHeight= 10;
 
-	//--buffer
+	/*buffs*/
 	~bufferForPen= Buffer.alloc(s, l, 2);
 	s.sync;
-
 	// for poems
 	~ge= Buffer.alloc(s, 8192, 2);
 	s.sync;
 	~req= Buffer.alloc(s,2**14,2);
 	s.sync;
-	//--interface
+
+	//--  MAIN  --//
 	~amp = 0.3;
 	~speed = 0.00001;
 	~trails = 0.2;
@@ -35,9 +35,8 @@ l= 512;    //global window/buffer size in pixels/samples
 	~blue = 1.0;
 	~alpha = 1.0;
 
-	//--main loop
+	// ANIM --/
 	u.drawFunc= {
-		//uncomment framerate display in the two lines below to gain some speed
 		Pen.color= Color.white;
 		//Pen.stringAtPoint("func{sig.fold()2*9e3}"/*+"fps:"+u.frameRate.asInteger*/, Point(200, 200));
 		//--
